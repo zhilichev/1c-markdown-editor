@@ -143,8 +143,8 @@
 			<CommonModule>CommonUseClientServer</CommonModule>
 			<CommonModule>MarkdownEditorClient</CommonModule>
 			<CommonModule>MarkdownEditorServerCached</CommonModule>
+			<CommonModule>MarkdownEditorServerCall</CommonModule>
 			<CommonModule>РедакторMarkdown</CommonModule>
-			<CommonModule>РедакторMarkdownВызовСервера</CommonModule>
 			<DataProcessor>ТестированиеРедактора</DataProcessor>
 		</ChildObjects>
 	</Configuration>

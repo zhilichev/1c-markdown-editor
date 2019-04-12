@@ -13,7 +13,7 @@ Procedure SwitchMode(Form) Export
 	If EditMode Then
 		Form["СодержимоеHTML_Markdown"] = "";
 	Else
-		Form["СодержимоеHTML_Markdown"] = РедакторMarkdownВызовСервера.MarkdownToHTML(
+		Form["СодержимоеHTML_Markdown"] = MarkdownEditorServerCall.MarkdownToHTML(
 			Form["ТекстовоеСодержимое_Markdown"]);
 	EndIf;
 	
