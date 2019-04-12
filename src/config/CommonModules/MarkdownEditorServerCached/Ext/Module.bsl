@@ -1,9 +1,9 @@
 ﻿
-#Область ПрограммныйИнтерфейс
+#Region Interface
 
-Функция ПолучитьШаблонHTML() Экспорт
+Function GetHTMLTemplate() Export
 	
-	Шаблон = 
+	Template = 
 	"<!DOCTYPE html>
 	|<html>
 	|<head>
@@ -20,8 +20,8 @@
 	|</body>
 	|</html>";	
 	
-	Возврат Шаблон;
+	Return Template;
 	
-КонецФункции
+EndFunction
 
-#КонецОбласти
+#EndRegion

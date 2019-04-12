@@ -142,9 +142,9 @@
 			<CommonPicture>РежимПросмотра</CommonPicture>
 			<CommonModule>CommonUseClientServer</CommonModule>
 			<CommonModule>MarkdownEditorClient</CommonModule>
+			<CommonModule>MarkdownEditorServerCached</CommonModule>
 			<CommonModule>РедакторMarkdown</CommonModule>
 			<CommonModule>РедакторMarkdownВызовСервера</CommonModule>
-			<CommonModule>РедакторMarkdownКлиентПовтИсп</CommonModule>
 			<DataProcessor>ТестированиеРедактора</DataProcessor>
 		</ChildObjects>
 	</Configuration>
