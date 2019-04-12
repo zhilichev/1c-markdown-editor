@@ -141,9 +141,9 @@
 			<Language>English</Language>
 			<CommonPicture>РежимПросмотра</CommonPicture>
 			<CommonModule>CommonUseClientServer</CommonModule>
+			<CommonModule>MarkdownEditorClient</CommonModule>
 			<CommonModule>РедакторMarkdown</CommonModule>
 			<CommonModule>РедакторMarkdownВызовСервера</CommonModule>
-			<CommonModule>РедакторMarkdownКлиент</CommonModule>
 			<CommonModule>РедакторMarkdownКлиентПовтИсп</CommonModule>
 			<DataProcessor>ТестированиеРедактора</DataProcessor>
 		</ChildObjects>
