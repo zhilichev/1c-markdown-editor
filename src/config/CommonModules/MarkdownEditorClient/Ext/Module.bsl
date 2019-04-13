@@ -4,22 +4,22 @@
 Procedure SwitchMode(Form) Export
 	
 	// Переключение редактора в другой режим
-	EditMode = NOT Form["РежимРедактора_Markdown"];
-	Form["РежимРедактора_Markdown"] = EditMode;
+	EditMode = NOT Form["MarkdownEditor_EditMode"];
+	Form["MarkdownEditor_EditMode"] = EditMode;
 	
 	Items = Form.Items;
-	Items["КнопкаПереключенияРежимаРедактора_Markdown"].Check = NOT EditMode;
+	Items["MarkdownEditor_SwitchModeButton"].Check = NOT EditMode;
 	
 	If EditMode Then
-		Form["СодержимоеHTML_Markdown"] = "";
+		Form["MarkdownEditor_HTMLText"] = "";
 	Else
-		Form["СодержимоеHTML_Markdown"] = MarkdownEditorServerCall.MarkdownToHTML(
-			Form["ТекстовоеСодержимое_Markdown"]);
+		Form["MarkdownEditor_HTMLText"] = MarkdownEditorServerCall.MarkdownToHTML(
+			Form["MarkdownEditor_SimpleText"]);
 	EndIf;
 	
 	// Управление видимостью редактора и просмотрщика
-	Items.ТекстовыйРедактор_Markdown.Visible = EditMode;
-	Items.ПросмотрРезультата_Markdown.Visible = NOT EditMode;	
+	Items.MarkdownEditor_EditorField.Visible = EditMode;
+	Items.MarkdownEditor_HTMLViewerField.Visible = NOT EditMode;	
 	
 EndProcedure
 

@@ -139,13 +139,13 @@
 		</Properties>
 		<ChildObjects>
 			<Language>English</Language>
-			<CommonPicture>РежимПросмотра</CommonPicture>
+			<CommonPicture>ViewMode</CommonPicture>
 			<CommonModule>CommonUseClientServer</CommonModule>
+			<CommonModule>MarkdownEditor</CommonModule>
 			<CommonModule>MarkdownEditorClient</CommonModule>
 			<CommonModule>MarkdownEditorServerCached</CommonModule>
 			<CommonModule>MarkdownEditorServerCall</CommonModule>
-			<CommonModule>РедакторMarkdown</CommonModule>
-			<DataProcessor>ТестированиеРедактора</DataProcessor>
+			<DataProcessor>EditorTest</DataProcessor>
 		</ChildObjects>
 	</Configuration>
 </MetaDataObject>

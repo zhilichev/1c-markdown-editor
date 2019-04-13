@@ -3,20 +3,26 @@
 	<Customizable>false</Customizable>
 	<AutoCommandBar name="ФормаКоманднаяПанель" id="-1"/>
 	<Events>
-		<Event name="OnCreateAtServer">ПриСозданииНаСервере</Event>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 	</Events>
 	<ChildItems>
-		<UsualGroup name="ОсновнаяГруппаФормы" id="1">
+		<UsualGroup name="DefaultGroup" id="1">
 			<Group>Vertical</Group>
 			<Representation>None</Representation>
 			<ShowTitle>false</ShowTitle>
-			<ExtendedTooltip name="ОсновнаяГруппаФормыРасширеннаяПодсказка" id="2"/>
+			<ExtendedTooltip name="DefaultGroupExtendedTooltip" id="2"/>
 		</UsualGroup>
 	</ChildItems>
 	<Attributes>
-		<Attribute name="Объект" id="1">
+		<Attribute name="Object" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Object</v8:content>
+				</v8:item>
+			</Title>
 			<Type>
-				<v8:Type>cfg:DataProcessorObject.ТестированиеРедактора</v8:Type>
+				<v8:Type>cfg:DataProcessorObject.EditorTest</v8:Type>
 			</Type>
 			<MainAttribute>true</MainAttribute>
 		</Attribute>
