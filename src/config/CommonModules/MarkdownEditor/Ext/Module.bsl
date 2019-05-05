@@ -31,18 +31,18 @@ Procedure CreateFormAttributes(Form)
 	
 	// Программное создание необходимых реквизитов на форме
 	
-	// Реквизит MarkdownEditor_EditMode хранит состояние редактора:
+	// Реквизит MarkdownEditorAttribute_EditMode хранит состояние редактора:
 	// - True - включен редактор;
 	// - False - включен режим просмотра.
-	EditorMode = New FormAttribute("MarkdownEditor_EditMode",
+	EditorMode = New FormAttribute("MarkdownEditorAttribute_EditMode",
 		New TypeDescription("Boolean"));
 		
-	// Реквизит MarkdownEditor_SimpleText хранит редактируемый текст
-	MarkdownText = New FormAttribute("MarkdownEditor_SimpleText", 
+	// Реквизит MarkdownEditorAttribute_Text хранит исходный текст
+	MarkdownText = New FormAttribute("MarkdownEditorAttribute_Text", 
 		New TypeDescription("String"), , , True);
 		
-	// Реквизит MarkdownEditor_HTMLText хранит преобразованный текст в HTML-код
-	HTMLText = New FormAttribute("MarkdownEditor_HTMLText", New TypeDescription("String"));
+	// Реквизит MarkdownEditorAttribute_HTML хранит преобразованный HTML-код
+	HTMLText = New FormAttribute("MarkdownEditorAttribute_HTML", New TypeDescription("String"));
 		
 	NewAttributes = New Array;
 	NewAttributes.Add(EditorMode);
@@ -52,7 +52,7 @@ Procedure CreateFormAttributes(Form)
 	Form.ChangeAttributes(NewAttributes);
 	
 	// Установка значений новых реквизитов формы
-	Form["MarkdownEditor_EditMode"] = True;	
+	Form.MarkdownEditorAttribute_EditMode = True;	
 	
 EndProcedure
 
@@ -62,14 +62,71 @@ Procedure CreateFormCommands(Form, NewCommands)
 	NewCommands = New Structure;
 	
 	// Команда переключения режима редактора
-	Command = Form.Commands.Add("MarkdownEditor_SwitchMode");
-	Command.Action         = "Attachable_MarkdownEditorSwitchMode";
+	Command = Form.Commands.Add("MarkdownEditorCommand_SwitchMode");
+	Command.Action         = "Attachable_MarkdownEditorExecCommand";
 	Command.Picture        = PictureLib.ViewMode;
 	Command.Representation = ButtonRepresentation.Picture;
-	Command.ToolTip        = "Переключить редактор в режим редактирования или просмотра результата";
+	Command.ToolTip        = НСтр("ru='Переключить редактор в режим редактирования или просмотра результата'");
 	Command.Shortcut       = New Shortcut(Key.V, True, False, True);
 	
-	NewCommands.Insert("SwitchMode", Command.Name);	
+	NewCommands.Insert("SwitchMode", Command.Name);
+	
+	// Команда полужирного начертания шрифта
+	Command = Form.Commands.Add("MarkdownEditorCommand_SetBoldFont");
+	Command.Action         = "Attachable_MarkdownEditorExecCommand";
+	Command.Picture        = PictureLib.Bold;
+	Command.Representation = ButtonRepresentation.Picture;
+	Command.ToolTip        = НСтр("ru='Полужирный шрифт'");
+	Command.Shortcut       = New Shortcut(Key.B, True, False, True);
+	
+	NewCommands.Insert("SetBoldFont", Command.Name);
+	
+	// Команда курсивного начертания шрифта
+	Command = Form.Commands.Add("MarkdownEditorCommand_SetItalicFont");
+	Command.Action         = "Attachable_MarkdownEditorExecCommand";
+	Command.Picture        = PictureLib.Italic;
+	Command.Representation = ButtonRepresentation.Picture;
+	Command.ToolTip        = "Курсивный шрифт";
+	Command.Shortcut       = New Shortcut(Key.I, True, False, True);
+	
+	NewCommands.Insert("SetItalicFont", Command.Name);
+	
+	// Команда зачеркнутого начертания шрифта
+	Command = Form.Commands.Add("MarkdownEditorCommand_SetStrikethroughFont");
+	Command.Action         = "Attachable_MarkdownEditorExecCommand";
+	Command.Picture        = PictureLib.Strikethrough;
+	Command.Representation = ButtonRepresentation.Picture;
+	Command.ToolTip        = "Зачеркнутый шрифт";
+	Command.Shortcut       = New Shortcut(Key.S, True, False, True);
+	
+	NewCommands.Insert("SetStrikethroughFont", Command.Name);
+	
+	// Команда добавления ненумерованного списка
+	Command = Form.Commands.Add("MarkdownEditorCommand_AddUnorderedList");
+	Command.Action         = "Attachable_MarkdownEditorExecCommand";
+	Command.Picture        = PictureLib.UnorderedList;
+	Command.Representation = ButtonRepresentation.Picture;
+	Command.ToolTip        = "Ненумерованный список";
+	
+	NewCommands.Insert("AddUnorderedList", Command.Name);
+	
+	// Команда добавления нумерованного списка
+	Command = Form.Commands.Add("MarkdownEditorCommand_AddOrderedList");
+	Command.Action         = "Attachable_MarkdownEditorExecCommand";
+	Command.Picture        = PictureLib.OrderedList;
+	Command.Representation = ButtonRepresentation.Picture;
+	Command.ToolTip        = "Нумерованный список";
+	
+	NewCommands.Insert("AddOrderedList", Command.Name);
+	
+	// Команда добавления ссылки
+	Command = Form.Commands.Add("MarkdownEditorCommand_InsertHyperlink");
+	Command.Action         = "Attachable_MarkdownEditorExecCommand";
+	Command.Picture        = PictureLib.Link;
+	Command.Representation = ButtonRepresentation.Picture;
+	Command.ToolTip        = "Ссылка";
+	
+	NewCommands.Insert("InsertHyperlink", Command.Name);	
 	
 EndProcedure
 
@@ -81,41 +138,113 @@ Procedure CreateFormItems(Form, OwnerGroup, Commands)
 	Items = Form.Items;
 	
 	// Создание общей группы, на которой будут размещены все элементы редактора
-	MainGroup = Items.Add("MarkdownEditor_MainGroup", Type("FormGroup"), OwnerGroup);
+	MainGroup = Items.Add("MarkdownEditorItem_MainGroup", Type("FormGroup"), OwnerGroup);
 	MainGroup.Type      = FormGroupType.UsualGroup;
 	MainGroup.Group     = ChildFormItemsGroup.Vertical;
 	MainGroup.ShowTitle = False;
 	
-#Region ЗаполнениеОсновнойКоманднойПанели
+#Region ОсновнаяКоманднаяПанель
 	
 	// Главная командная панель управления редактором
-	MainCommandBar = Items.Add("MarkdownEditor_MainCommandBar", 
+	MainCommandBar = Items.Add("MarkdownEditorItem_MainCommandBar", 
 		Type("FormGroup"), MainGroup);
 		
 	MainCommandBar.Type = FormGroupType.CommandBar;
 	MainCommandBar.HorizontalStretch = True;
 	
+#EndRegion
+
+#Region ГруппаКнопокРежимаРедактора
+
 	// Группа кнопок отображения кнопки переключения режимов "редактор" / "просмотр"
-	ModeButtonsGroup = Items.Add("MarkdownEditor_ModeButtonsGroup", Type("FormGroup"),
+	ModeButtonsGroup = Items.Add("MarkdownEditorItem_ModeButtonsGroup", Type("FormGroup"),
 		MainCommandBar);
 		
 	ModeButtonsGroup.Type = FormGroupType.ButtonGroup;
 	
 	// Кнопка переключения режима редактора
-	SwitchModeButton = Items.Add("MarkdownEditor_SwitchModeButton",
-		Type("FormButton"), ModeButtonsGroup);
+	SwitchModeButton = Items.Add("MarkdownEditorItem_SwitchModeButton", Type("FormButton"),
+		ModeButtonsGroup);
 		
 	SwitchModeButton.CommandName = Commands.SwitchMode;
+
+#EndRegion
+
+#Region ГруппаКнопокОформленияШрифта
+	
+	// Группа кнопок изменения начертания текста
+	FontStyleButtonsGroup = Items.Add("MarkdownEditorItem_FontStyleButtonsGroup", Type("FormGroup"),
+		MainCommandBar);
+		
+	FontStyleButtonsGroup.Type = FormGroupType.ButtonGroup;
+	FontStyleButtonsGroup.Representation = ButtonGroupRepresentation.Compact;
+	
+	// Кнопка полужирного начертания текста
+	BoldFontButton = Items.Add("MarkdownEditorItem_BoldFontButton", Type("FormButton"),
+		FontStyleButtonsGroup);
+		
+	BoldFontButton.CommandName = Commands.SetBoldFont;
+	
+	// Кнопка курсивного начертания текста
+	ItalicFontButton = Items.Add("MarkdownEditorItem_ItalicFontButton", Type("FormButton"),
+		FontStyleButtonsGroup);
+		
+	ItalicFontButton.CommandName = Commands.SetItalicFont;
+	
+	// Кнопка зачеркнутого начертания текста
+	StrikethroughFontButton = Items.Add("MarkdownEditorItem_StrikethroughFontButton", Type("FormButton"),
+		FontStyleButtonsGroup);
+		
+	StrikethroughFontButton.CommandName = Commands.SetStrikethroughFont;	
 	
 #EndRegion
 
-#Region СозданиеРедактораТекста
+#Region ГруппаКнопокСпиской
+
+	// Группа кнопок создания списков
+	ListsButtonsGroup = Items.Add("MarkdownEditorItem_ListsButtonsGroup", Type("FormGroup"),
+		MainCommandBar);
+		
+	ListsButtonsGroup.Type = FormGroupType.ButtonGroup;
+	ListsButtonsGroup.Representation = ButtonGroupRepresentation.Compact;
+	
+	// Кнопка ненумерованного списка
+	UnorderedListButton = Items.Add("MarkdownEditorItem_UnorderedListButton", Type("FormButton"),
+		ListsButtonsGroup);
+		
+	UnorderedListButton.CommandName = Commands.AddUnorderedList;
+	
+	// Кнопка нумерованного списка
+	OrderedListButton = Items.Add("MarkdownEditorItem_OrderedListButton", Type("FormButton"),
+		ListsButtonsGroup);
+		
+	OrderedListButton.CommandName = Commands.AddOrderedList;	
+
+#EndRegion
+
+#Region ГруппаКнопокВставки
+
+	// Группа кнопок вставки различные объектов
+	InsertButtonsGroup = Items.Add("MarkdownEditorItem_InsertButtonsGroup", Type("FormGroup"),
+		MainCommandBar);
+		
+	InsertButtonsGroup.Type = FormGroupType.ButtonGroup;
+	InsertButtonsGroup.Representation = ButtonGroupRepresentation.Compact;		
+		
+	HyperlinkButton = Items.Add("MarkdownEditorItem_HyperlinkButton", Type("FormButton"),
+		InsertButtonsGroup);
+		
+	HyperlinkButton.CommandName = Commands.InsertHyperlink;
+
+#EndRegion
+
+#Region РедакторТекста
 
 	// Создание текстового поля для редактирования простого текста
-	EditorTextField = Items.Add("MarkdownEditor_EditorField", Type("FormField"),
+	EditorTextField = Items.Add("MarkdownEditorItem_EditorField", Type("FormField"),
 		MainGroup);
 		
-	EditorTextField.DataPath = "MarkdownEditor_SimpleText";
+	EditorTextField.DataPath = "MarkdownEditorAttribute_Text";
 	EditorTextField.Type = FormFieldType.InputField;
 	
 	EditorTextField.AutoMaxWidth = False;
@@ -128,13 +257,13 @@ Procedure CreateFormItems(Form, OwnerGroup, Commands)
 
 #EndRegion
 
-#Region СозданиеПросмотрщикаMarkdown
+#Region MarkdownViewer
 
 	// Создание поля HTML-документа для просмотра результата
-	HTMLViewerField = Items.Add("MarkdownEditor_HTMLViewerField", Type("FormField"), 
+	HTMLViewerField = Items.Add("MarkdownEditorItem_HTMLViewerField", Type("FormField"), 
 		MainGroup);
 	
-	HTMLViewerField.DataPath = "MarkdownEditor_HTMLText";
+	HTMLViewerField.DataPath = "MarkdownEditorAttribute_HTML";
 	HTMLViewerField.Type = FormFieldType.HTMLDocumentField;
 	HTMLViewerField.TitleLocation = FormItemTitleLocation.None;
 	
