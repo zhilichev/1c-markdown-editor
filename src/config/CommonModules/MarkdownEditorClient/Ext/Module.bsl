@@ -22,8 +22,12 @@ Procedure ExecCommand(Form, Command) Export
 		SetFontStyle(Form, "~~", NStr("en = '~~strikethrough font~~'"));
 		
 	// Обработка команды добавления ссылки
-	ElsIf CommandName = "MarkdownEditorCommand_InsertHyperlink" Then
-	    InsertHyperlink(Form);
+	ElsIf CommandName = "MarkdownEditorCommand_InsertLink" Then
+	    InsertLink(Form);
+		
+	// Обработка команды добавления блока кода
+	ElsIf CommandName = "MarkdownEditorCommand_InsertCodeBlock" Then
+	    InsertCodeBlock(Form);
 		
 	EndIf;
 	     
@@ -33,20 +37,13 @@ EndProcedure
 
 #Region InternalProceduresAndFunctions
 
-Procedure InsertHyperlink(Form)
-	
-	NotifyDescription = New NotifyDescription("OnHyperlinkFormClose", MarkdownEditorClient, Form);
-	OpenForm("CommonForm.InsertHyperlink", , Form, , , , NotifyDescription, FormWindowOpeningMode.LockOwnerWindow);
-	
-EndProcedure
-
-// Возвращает описание текущего положения курсора в редакторе.
+// Return description position of editor's cursor.
 //
-// Параметры:
-//  EditorItem - FormField - поле ввода редактора.
+// Parameters:
+//  EditorItem - FormField - editor's field.
 //
-// Возвращаемое значение:
-//  Структура с полями положения курсора.
+// Returned value:
+//  Structure of cursor position.
 //
 Function GetCursorPos(EditorItem)
 	
@@ -63,7 +60,39 @@ Function GetCursorPos(EditorItem)
 	
 EndFunction
 
-Procedure OnHyperlinkFormClose(CloseResult, OwnerForm) Export
+Procedure InsertCodeBlock(Form)
+	
+	NotifyDescription = New NotifyDescription("OnCodeBlockFormClose", MarkdownEditorClient, Form);
+	OpenForm("CommonForm.CodeBlock", , Form, , , , NotifyDescription, FormWindowOpeningMode.LockOwnerWindow);	
+	
+EndProcedure
+
+Procedure InsertLink(Form)
+	
+	NotifyDescription = New NotifyDescription("OnLinkFormClose", MarkdownEditorClient, Form);
+	OpenForm("CommonForm.InsertLink", , Form, , , , NotifyDescription, FormWindowOpeningMode.LockOwnerWindow);
+	
+EndProcedure
+
+Procedure OnCodeBlockFormClose(CloseResult, OwnerForm) Export
+	
+	If CloseResult = Undefined Then
+		Return;
+	EndIf;
+	
+	EditorItem = OwnerForm.Items.MarkdownEditorItem_EditorField;
+	
+	// Получение текущего положения курсора в редакторе
+	CursorPos = GetCursorPos(EditorItem);
+	
+	EditorItem.SelectedText = StrTemplate("```%1%2%3```", Chars.CR, CloseResult, Chars.CR);
+	
+	// Восстановление положения курсора
+	Notify("MarkdownEditorEvent_RestoreCursorPosition", CursorPos, OwnerForm.UUID);	
+	
+EndProcedure
+
+Procedure OnLinkFormClose(CloseResult, OwnerForm) Export
 	
 	If CloseResult = Undefined 
 		OR (IsBlankString(CloseResult.Address) AND IsBlankString(CloseResult.Title)) Then
@@ -87,15 +116,7 @@ Procedure SetFontStyle(Form, Marker, BlankString)
 	EditorItem = Form.Items.MarkdownEditorItem_EditorField;
 	
 	// Необходимо запомнить позицию курсора
-	CursorPos = New Structure;
-	CursorPos.Insert("BeginningOfRow", 0);
-	CursorPos.Insert("BeginningOfColumn", 0);
-	CursorPos.Insert("EndOfRow", 0);
-	CursorPos.Insert("EndOfColumn", 0);
-	
-	// Получение позиций текущего выделения
-	EditorItem.GetTextSelectionBounds(CursorPos.BeginningOfRow, CursorPos.BeginningOfColumn,
-		CursorPos.EndOfRow, CursorPos.EndOfColumn);
+	CursorPos = GetCursorPos(EditorItem);
 		
 	SelectedText = EditorItem.SelectedText;
 	

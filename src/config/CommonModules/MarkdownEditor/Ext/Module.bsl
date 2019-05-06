@@ -66,7 +66,7 @@ Procedure CreateFormCommands(Form, NewCommands)
 	Command.Action         = "Attachable_MarkdownEditorExecCommand";
 	Command.Picture        = PictureLib.ViewMode;
 	Command.Representation = ButtonRepresentation.Picture;
-	Command.ToolTip        = НСтр("ru='Переключить редактор в режим редактирования или просмотра результата'");
+	Command.ToolTip        = NStr("en = 'Preview mode'");
 	Command.Shortcut       = New Shortcut(Key.V, True, False, True);
 	
 	NewCommands.Insert("SwitchMode", Command.Name);
@@ -76,7 +76,7 @@ Procedure CreateFormCommands(Form, NewCommands)
 	Command.Action         = "Attachable_MarkdownEditorExecCommand";
 	Command.Picture        = PictureLib.Bold;
 	Command.Representation = ButtonRepresentation.Picture;
-	Command.ToolTip        = НСтр("ru='Полужирный шрифт'");
+	Command.ToolTip        = NStr("en = 'Bold'");
 	Command.Shortcut       = New Shortcut(Key.B, True, False, True);
 	
 	NewCommands.Insert("SetBoldFont", Command.Name);
@@ -86,7 +86,7 @@ Procedure CreateFormCommands(Form, NewCommands)
 	Command.Action         = "Attachable_MarkdownEditorExecCommand";
 	Command.Picture        = PictureLib.Italic;
 	Command.Representation = ButtonRepresentation.Picture;
-	Command.ToolTip        = "Курсивный шрифт";
+	Command.ToolTip        = NStr("en = 'Italic'");
 	Command.Shortcut       = New Shortcut(Key.I, True, False, True);
 	
 	NewCommands.Insert("SetItalicFont", Command.Name);
@@ -96,37 +96,46 @@ Procedure CreateFormCommands(Form, NewCommands)
 	Command.Action         = "Attachable_MarkdownEditorExecCommand";
 	Command.Picture        = PictureLib.Strikethrough;
 	Command.Representation = ButtonRepresentation.Picture;
-	Command.ToolTip        = "Зачеркнутый шрифт";
+	Command.ToolTip        = NStr("en = 'Strikethrough'");
 	Command.Shortcut       = New Shortcut(Key.S, True, False, True);
 	
 	NewCommands.Insert("SetStrikethroughFont", Command.Name);
 	
 	// Команда добавления ненумерованного списка
-	Command = Form.Commands.Add("MarkdownEditorCommand_AddUnorderedList");
+	Command = Form.Commands.Add("MarkdownEditorCommand_InsertBulletList");
 	Command.Action         = "Attachable_MarkdownEditorExecCommand";
-	Command.Picture        = PictureLib.UnorderedList;
+	Command.Picture        = PictureLib.BulletList;
 	Command.Representation = ButtonRepresentation.Picture;
-	Command.ToolTip        = "Ненумерованный список";
+	Command.ToolTip        = NStr("en = 'Bullet list'");
 	
-	NewCommands.Insert("AddUnorderedList", Command.Name);
+	NewCommands.Insert("InsertBulletList", Command.Name);
 	
 	// Команда добавления нумерованного списка
-	Command = Form.Commands.Add("MarkdownEditorCommand_AddOrderedList");
+	Command = Form.Commands.Add("MarkdownEditorCommand_InsertNumberedList");
 	Command.Action         = "Attachable_MarkdownEditorExecCommand";
-	Command.Picture        = PictureLib.OrderedList;
+	Command.Picture        = PictureLib.NumberedList;
 	Command.Representation = ButtonRepresentation.Picture;
-	Command.ToolTip        = "Нумерованный список";
+	Command.ToolTip        = NStr("en = 'Numbered list'");
 	
-	NewCommands.Insert("AddOrderedList", Command.Name);
+	NewCommands.Insert("InsertNumberedList", Command.Name);
 	
 	// Команда добавления ссылки
-	Command = Form.Commands.Add("MarkdownEditorCommand_InsertHyperlink");
+	Command = Form.Commands.Add("MarkdownEditorCommand_InsertLink");
 	Command.Action         = "Attachable_MarkdownEditorExecCommand";
 	Command.Picture        = PictureLib.Link;
 	Command.Representation = ButtonRepresentation.Picture;
-	Command.ToolTip        = "Ссылка";
+	Command.ToolTip        = NStr("en = 'Insert link'");
 	
-	NewCommands.Insert("InsertHyperlink", Command.Name);	
+	NewCommands.Insert("InsertLink", Command.Name);
+	
+	// Команда добавления блока кода
+	Command = Form.Commands.Add("MarkdownEditorCommand_InsertCodeBlock");
+	Command.Action         = "Attachable_MarkdownEditorExecCommand";
+	Command.Picture        = PictureLib.CodeBlock;
+	Command.Representation = ButtonRepresentation.Picture;
+	Command.ToolTip        = NStr("en = 'Insert code block'");
+	
+	NewCommands.Insert("InsertCodeBlock", Command.Name);	
 	
 EndProcedure
 
@@ -209,16 +218,16 @@ Procedure CreateFormItems(Form, OwnerGroup, Commands)
 	ListsButtonsGroup.Representation = ButtonGroupRepresentation.Compact;
 	
 	// Кнопка ненумерованного списка
-	UnorderedListButton = Items.Add("MarkdownEditorItem_UnorderedListButton", Type("FormButton"),
+	BulletListButton = Items.Add("MarkdownEditorItem_BulletListButton", Type("FormButton"),
 		ListsButtonsGroup);
 		
-	UnorderedListButton.CommandName = Commands.AddUnorderedList;
+	BulletListButton.CommandName = Commands.InsertBulletList;
 	
 	// Кнопка нумерованного списка
-	OrderedListButton = Items.Add("MarkdownEditorItem_OrderedListButton", Type("FormButton"),
+	NumberedListButton = Items.Add("MarkdownEditorItem_NumberedListButton", Type("FormButton"),
 		ListsButtonsGroup);
 		
-	OrderedListButton.CommandName = Commands.AddOrderedList;	
+	NumberedListButton.CommandName = Commands.InsertNumberedList;	
 
 #EndRegion
 
@@ -231,10 +240,15 @@ Procedure CreateFormItems(Form, OwnerGroup, Commands)
 	InsertButtonsGroup.Type = FormGroupType.ButtonGroup;
 	InsertButtonsGroup.Representation = ButtonGroupRepresentation.Compact;		
 		
-	HyperlinkButton = Items.Add("MarkdownEditorItem_HyperlinkButton", Type("FormButton"),
+	InsertLinkButton = Items.Add("MarkdownEditorItem_InsertLinkButton", Type("FormButton"),
 		InsertButtonsGroup);
 		
-	HyperlinkButton.CommandName = Commands.InsertHyperlink;
+	InsertLinkButton.CommandName = Commands.InsertLink;
+	
+	InsertCodeBlockButton = Items.Add("MarkdownEditorItem_InsertCodeBlockButton", Type("FormButton"),
+		InsertButtonsGroup);
+		
+	InsertCodeBlockButton.CommandName = Commands.InsertCodeBlock;	
 
 #EndRegion
 
