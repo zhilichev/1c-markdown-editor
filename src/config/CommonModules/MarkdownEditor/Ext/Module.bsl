@@ -135,7 +135,16 @@ Procedure CreateFormCommands(Form, NewCommands)
 	Command.Representation = ButtonRepresentation.Picture;
 	Command.ToolTip        = NStr("en = 'Insert code block'");
 	
-	NewCommands.Insert("InsertCodeBlock", Command.Name);	
+	NewCommands.Insert("InsertCodeBlock", Command.Name);
+	
+	// Команда добавления изображения
+	Command = Form.Commands.Add("MarkdownEditorCommand_InsertImage");
+	Command.Action         = "Attachable_MarkdownEditorExecCommand";
+	Command.Picture        = PictureLib.Image;
+	Command.Representation = ButtonRepresentation.Picture;
+	Command.ToolTip        = NStr("en = 'Insert image'");
+	
+	NewCommands.Insert("InsertImage", Command.Name);	
 	
 EndProcedure
 
@@ -248,7 +257,12 @@ Procedure CreateFormItems(Form, OwnerGroup, Commands)
 	InsertCodeBlockButton = Items.Add("MarkdownEditorItem_InsertCodeBlockButton", Type("FormButton"),
 		InsertButtonsGroup);
 		
-	InsertCodeBlockButton.CommandName = Commands.InsertCodeBlock;	
+	InsertCodeBlockButton.CommandName = Commands.InsertCodeBlock;
+	
+	InsertCodeBlockButton = Items.Add("MarkdownEditorItem_InsertImage", Type("FormButton"),
+		InsertButtonsGroup);
+		
+	InsertCodeBlockButton.CommandName = Commands.InsertImage;	
 
 #EndRegion
 

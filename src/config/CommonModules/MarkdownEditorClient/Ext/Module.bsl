@@ -29,6 +29,10 @@ Procedure ExecCommand(Form, Command) Export
 	ElsIf CommandName = "MarkdownEditorCommand_InsertCodeBlock" Then
 	    InsertCodeBlock(Form);
 		
+	// Обработка команды вставки ссылки на изображение
+	ElsIf CommandName = "MarkdownEditorCommand_InsertImage" Then
+		InsertImage(Form);
+		
 	EndIf;
 	     
 EndProcedure
@@ -67,6 +71,13 @@ Procedure InsertCodeBlock(Form)
 	
 EndProcedure
 
+Procedure InsertImage(Form)
+	
+	NotifyDescription = New NotifyDescription("OnImageFormClose", MarkdownEditorClient, Form);
+	OpenForm("CommonForm.InsertImage", , Form, , , , NotifyDescription, FormWindowOpeningMode.LockOwnerWindow);
+	
+EndProcedure
+
 Procedure InsertLink(Form)
 	
 	NotifyDescription = New NotifyDescription("OnLinkFormClose", MarkdownEditorClient, Form);
@@ -92,10 +103,13 @@ Procedure OnCodeBlockFormClose(CloseResult, OwnerForm) Export
 	
 EndProcedure
 
+Procedure OnImageFormClose(CloseResult, OwnerForm) Export
+	
+EndProcedure
+
 Procedure OnLinkFormClose(CloseResult, OwnerForm) Export
 	
-	If CloseResult = Undefined 
-		OR (IsBlankString(CloseResult.Address) AND IsBlankString(CloseResult.Title)) Then
+	If CloseResult = Undefined OR IsBlankString(CloseResult.Address) Then
 		Return;
 	EndIf;
 	
@@ -104,7 +118,13 @@ Procedure OnLinkFormClose(CloseResult, OwnerForm) Export
 	// Получение текущего положения курсора в редакторе
 	CursorPos = GetCursorPos(EditorItem);
 	
-	EditorItem.SelectedText = StrTemplate("[%1](%2)", CloseResult.Title, CloseResult.Address);
+	If IsBlankString(CloseResult.LinkText) Then
+		LinkText = CloseResult.Address;
+	Else
+		LinkText = CloseResult.LinkText;
+	EndIf;
+	
+	EditorItem.SelectedText = StrTemplate("[%1](%2%3)", LinkText, CloseResult.Address);
 	
 	// Восстановление положения курсора
 	Notify("MarkdownEditorEvent_RestoreCursorPosition", CursorPos, OwnerForm.UUID);	
