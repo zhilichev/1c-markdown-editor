@@ -217,7 +217,7 @@ Procedure CreateFormItems(Form, OwnerGroup, Commands)
 	
 #EndRegion
 
-#Region ГруппаКнопокСпиской
+#Region ГруппаКнопокСписков
 
 	// Группа кнопок создания списков
 	ListsButtonsGroup = Items.Add("MarkdownEditorItem_ListsButtonsGroup", Type("FormGroup"),
@@ -268,9 +268,15 @@ Procedure CreateFormItems(Form, OwnerGroup, Commands)
 
 #Region РедакторТекста
 
+	// Создание общей группы, на которой будут размещены все элементы редактора
+	EditorViewerGroup = Items.Add("MarkdownEditorItem_EditorViewer", Type("FormGroup"), MainGroup);
+	EditorViewerGroup.Type      = FormGroupType.UsualGroup;
+	EditorViewerGroup.Group     = ChildFormItemsGroup.Horizontal;
+	EditorViewerGroup.ShowTitle = False;
+
 	// Создание текстового поля для редактирования простого текста
 	EditorTextField = Items.Add("MarkdownEditorItem_EditorField", Type("FormField"),
-		MainGroup);
+		EditorViewerGroup);
 		
 	EditorTextField.DataPath = "MarkdownEditorAttribute_Text";
 	EditorTextField.Type = FormFieldType.InputField;
@@ -289,7 +295,7 @@ Procedure CreateFormItems(Form, OwnerGroup, Commands)
 
 	// Создание поля HTML-документа для просмотра результата
 	HTMLViewerField = Items.Add("MarkdownEditorItem_HTMLViewerField", Type("FormField"), 
-		MainGroup);
+		EditorViewerGroup);
 	
 	HTMLViewerField.DataPath = "MarkdownEditorAttribute_HTML";
 	HTMLViewerField.Type = FormFieldType.HTMLDocumentField;

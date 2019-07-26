@@ -154,6 +154,7 @@
 			<CommonModule>MarkdownEditorClient</CommonModule>
 			<CommonModule>MarkdownEditorServerCached</CommonModule>
 			<CommonModule>MarkdownEditorServerCall</CommonModule>
+			<CommonModule>MarkdownEditorClientServer</CommonModule>
 			<CommonForm>CodeBlock</CommonForm>
 			<CommonForm>InsertImage</CommonForm>
 			<CommonForm>InsertLink</CommonForm>

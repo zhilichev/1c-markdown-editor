@@ -37,6 +37,16 @@ Procedure ExecCommand(Form, Command) Export
 	     
 EndProcedure
 
+Procedure OnEditTextChange(Form, Text, StandartProcessing) Export
+	
+	StandartProcessing = False;
+	
+	If Form.MarkdownEditorAttribute_EditMode Then
+		
+	EndIf
+	
+EndProcedure
+
 #EndRegion
 
 #Region InternalProceduresAndFunctions
@@ -170,7 +180,7 @@ Procedure SwitchMode(Form)
 	If EditMode Then
 		Form.MarkdownEditorAttribute_HTML = "";
 	Else
-		Form.MarkdownEditorAttribute_HTML = MarkdownEditorServerCall.MarkdownToHTML(
+		Form.MarkdownEditorAttribute_HTML = MarkdownEditorClientServer.MarkdownToHTML(
 			Form.MarkdownEditorAttribute_Text);
 	EndIf;
 	
