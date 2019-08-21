@@ -6,8 +6,11 @@ Procedure ExecCommand(Form, Command) Export
 	CommandName = Command.Name;
 	
 	// Обработка команды переключения режимов редактора
-	If CommandName = "MarkdownEditorCommand_SwitchMode" Then
-		SwitchMode(Form);
+	If CommandName = "MarkdownEditorCommand_EditorMode" 
+		OR CommandName = "MarkdownEditorCommand_ViewMode"
+		OR CommandName = "MarkdownEditorCommand_PreviewMode" Then
+
+		SwitchMode(Form, CommandName);
 		
 	// Обработка команды оформления жирным шрифтов
 	ElsIf CommandName = "MarkdownEditorCommand_SetBoldFont" Then
@@ -39,11 +42,8 @@ EndProcedure
 
 Procedure OnEditTextChange(Form, Text, StandartProcessing) Export
 	
-	//StandartProcessing = False;
-	
-	If Form.MarkdownEditorAttribute_EditMode Then
-		Form.MarkdownEditorAttribute_HTML = MarkdownEditorClientServer.MarkdownToHTML(
-			Text);	
+	If Form.MarkdownEditorAttribute_EditMode = 2 Then
+		Form.MarkdownEditorAttribute_HTML = MarkdownEditorClientServer.MarkdownToHTML(Text);	
 	EndIf;
 	
 EndProcedure
@@ -169,16 +169,23 @@ Procedure SetFontStyle(Form, Marker, BlankString)
 	
 EndProcedure
 
-Procedure SwitchMode(Form)
-	
-	// Переключение редактора в другой режим
-	EditMode = NOT Form.MarkdownEditorAttribute_EditMode;
-	Form.MarkdownEditorAttribute_EditMode = EditMode;
-	
+Procedure SwitchMode(Form, CommandName)
+
+	// Переключение режима редактора в соответствии с командой
+	If CommandName = "MarkdownEditorCommand_EditorMode" Then
+		Form.MarkdownEditorAttribute_EditMode = 0;
+	ElsIf CommandName = "MarkdownEditorCommand_ViewMode" Then
+		Form.MarkdownEditorAttribute_EditMode = 1;
+	Else
+		Form.MarkdownEditorAttribute_EditMode = 2;
+	EndIf;
+		
 	Items = Form.Items;
-	Items.MarkdownEditorItem_SwitchModeButton.Check = NOT EditMode;
+	Items.MarkdownEditorItem_EditorModeButton.Check = (Form.MarkdownEditorAttribute_EditMode = 0);
+	Items.MarkdownEditorItem_ViewModeButton.Check = (Form.MarkdownEditorAttribute_EditMode = 1);
+	Items.MarkdownEditorItem_PreviewModeButton.Check = (Form.MarkdownEditorAttribute_EditMode = 2);
 	
-	If EditMode Then
+	If Form.MarkdownEditorAttribute_EditMode = 0 Then
 		Form.MarkdownEditorAttribute_HTML = "";
 	Else
 		Form.MarkdownEditorAttribute_HTML = MarkdownEditorClientServer.MarkdownToHTML(
@@ -186,8 +193,8 @@ Procedure SwitchMode(Form)
 	EndIf;
 	
 	// Управление видимостью редактора и просмотрщика
-	Items.MarkdownEditorItem_EditorField.Visible = EditMode;
-	Items.MarkdownEditorItem_HTMLViewerField.Visible = NOT EditMode;	
+	Items.MarkdownEditorItem_EditorField.Visible = (Form.MarkdownEditorAttribute_EditMode = 0 OR Form.MarkdownEditorAttribute_EditMode = 2);
+	Items.MarkdownEditorItem_HTMLViewerField.Visible = (Form.MarkdownEditorAttribute_EditMode = 1 OR Form.MarkdownEditorAttribute_EditMode = 2);	
 	
 EndProcedure
 

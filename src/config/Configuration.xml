@@ -142,13 +142,15 @@
 			<Language>Russian</Language>
 			<CommonPicture>Bold</CommonPicture>
 			<CommonPicture>BulletList</CommonPicture>
+			<CommonPicture>CodeBlock</CommonPicture>
+			<CommonPicture>EditorMode</CommonPicture>
 			<CommonPicture>Image</CommonPicture>
 			<CommonPicture>Italic</CommonPicture>
 			<CommonPicture>Link</CommonPicture>
 			<CommonPicture>NumberedList</CommonPicture>
 			<CommonPicture>Strikethrough</CommonPicture>
 			<CommonPicture>ViewMode</CommonPicture>
-			<CommonPicture>CodeBlock</CommonPicture>
+			<CommonPicture>PreviewMode</CommonPicture>
 			<CommonModule>CommonUseClientServer</CommonModule>
 			<CommonModule>MarkdownEditor</CommonModule>
 			<CommonModule>MarkdownEditorClient</CommonModule>

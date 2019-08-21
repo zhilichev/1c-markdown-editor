@@ -13,7 +13,7 @@ EndProcedure
 
 Procedure InitFormData(Form, OwnerGroup)
 	
-	// Создаваемые команды формы
+	// Список программно-создаваемых команд  формы
 	Var NewCommands;
 	
 	// Создание дополнительных реквизитов формы
@@ -32,10 +32,11 @@ Procedure CreateFormAttributes(Form)
 	// Программное создание необходимых реквизитов на форме
 	
 	// Реквизит MarkdownEditorAttribute_EditMode хранит состояние редактора:
-	// - True - включен редактор;
-	// - False - включен режим просмотра.
+	// - 0 - включен режим редактора;
+	// - 1 - включен режим просмотра;
+	// - 2 - включен режим предпросмотра при редактировании.
 	EditorMode = New FormAttribute("MarkdownEditorAttribute_EditMode",
-		New TypeDescription("Boolean"));
+		New TypeDescription("Number", New NumberQualifiers(1, 0, AllowedSign.Nonnegative)));
 		
 	// Реквизит MarkdownEditorAttribute_Text хранит исходный текст
 	MarkdownText = New FormAttribute("MarkdownEditorAttribute_Text", 
@@ -60,16 +61,36 @@ Procedure CreateFormCommands(Form, NewCommands)
 	
 	// Программное создание команд
 	NewCommands = New Structure;
+
+	// Команда переключения в режим "Редактор"
+	Command = Form.Commands.Add("MarkdownEditorCommand_EditorMode");
+	Command.Action         = "Attachable_MarkdownEditorExecCommand";
+	Command.Picture        = PictureLib.EditorMode;
+	Command.ToolTip        = NStr("en = 'Switch to editor mode'");
+	Command.Representation = ButtonRepresentation.Picture;
+	Command.Shortcut       = New Shortcut(Key.E, True, False, True);
 	
-	// Команда переключения режима редактора
-	Command = Form.Commands.Add("MarkdownEditorCommand_SwitchMode");
+	NewCommands.Insert("SwitchToEditorMode", Command.Name);
+
+	// Команда переключения в режим "Просмотр"
+	Command = Form.Commands.Add("MarkdownEditorCommand_ViewMode");
 	Command.Action         = "Attachable_MarkdownEditorExecCommand";
 	Command.Picture        = PictureLib.ViewMode;
+	Command.ToolTip        = NStr("en = 'Switch to view mode'");
 	Command.Representation = ButtonRepresentation.Picture;
-	Command.ToolTip        = NStr("en = 'Preview mode'");
 	Command.Shortcut       = New Shortcut(Key.V, True, False, True);
 	
-	NewCommands.Insert("SwitchMode", Command.Name);
+	NewCommands.Insert("SwitchToViewMode", Command.Name);	
+
+	// Команда переключения в режим "Редактор"
+	Command = Form.Commands.Add("MarkdownEditorCommand_PreviewMode");
+	Command.Action         = "Attachable_MarkdownEditorExecCommand";
+	Command.Picture        = PictureLib.PreviewMode;
+	Command.ToolTip        = NStr("en = 'Switch to live preview mode'");
+	Command.Representation = ButtonRepresentation.Picture;
+	Command.Shortcut       = New Shortcut(Key.P, True, False, True);
+	
+	NewCommands.Insert("SwitchToPreviewMode", Command.Name);
 	
 	// Команда полужирного начертания шрифта
 	Command = Form.Commands.Add("MarkdownEditorCommand_SetBoldFont");
@@ -179,12 +200,25 @@ Procedure CreateFormItems(Form, OwnerGroup, Commands)
 		MainCommandBar);
 		
 	ModeButtonsGroup.Type = FormGroupType.ButtonGroup;
+	ModeButtonsGroup.Representation = ButtonGroupRepresentation.Compact;
 	
-	// Кнопка переключения режима редактора
-	SwitchModeButton = Items.Add("MarkdownEditorItem_SwitchModeButton", Type("FormButton"),
+	// Кнопка включения режима "Редактор"
+	EditorModeButton = Items.Add("MarkdownEditorItem_EditorModeButton", Type("FormButton"),
+		ModeButtonsGroup);
+
+	EditorModeButton.CommandName = Commands.SwitchToEditorMode;
+	
+	// Кнопка включения режима "Просмотр"
+	ViewModeButton = Items.Add("MarkdownEditorItem_ViewModeButton", Type("FormButton"),
 		ModeButtonsGroup);
 		
-	SwitchModeButton.CommandName = Commands.SwitchMode;
+	ViewModeButton.CommandName = Commands.SwitchToViewMode;
+
+	// Кнопка включения режима "Редактор + предпросмотр"
+	PreviewModeButton = Items.Add("MarkdownEditorItem_PreviewModeButton", Type("FormButton"),
+		ModeButtonsGroup);
+
+	PreviewModeButton.CommandName = Commands.SwitchToPreviewMode;
 
 #EndRegion
 
