@@ -21,7 +21,7 @@ EndProcedure
 #Region AttachableHandlersOfMarkdownEditor
 
 &AtClient
-Procedure Attachable_MarkdownEditorOnEditTextChange(Text, StandardProcessing)
+Procedure Attachable_MarkdownEditorOnEditTextChange(Item, Text, StandardProcessing)
 	
 	MarkdownEditorClient.OnEditTextChange(ThisObject, Text, StandardProcessing);
 	

@@ -39,11 +39,12 @@ EndProcedure
 
 Procedure OnEditTextChange(Form, Text, StandartProcessing) Export
 	
-	StandartProcessing = False;
+	//StandartProcessing = False;
 	
 	If Form.MarkdownEditorAttribute_EditMode Then
-		
-	EndIf
+		Form.MarkdownEditorAttribute_HTML = MarkdownEditorClientServer.MarkdownToHTML(
+			Text);	
+	EndIf;
 	
 EndProcedure
 

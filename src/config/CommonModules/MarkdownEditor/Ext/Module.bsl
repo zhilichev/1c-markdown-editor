@@ -287,7 +287,10 @@ Procedure CreateFormItems(Form, OwnerGroup, Commands)
 	EditorTextField.TitleLocation = FormItemTitleLocation.None;
 	EditorTextField.ExtendedEdit = True;
 	EditorTextField.HorizontalStretch = True;
-	EditorTextField.VerticalStretch = True;	
+	EditorTextField.VerticalStretch = True;
+	EditorTextField.EditTextUpdate = EditTextUpdate.OnValueChange;
+	
+	EditorTextField.SetAction("EditTextChange", "Attachable_MarkdownEditorOnEditTextChange");
 
 #EndRegion
 
