@@ -17,6 +17,7 @@ Function MarkdownToHTML(Val Text) Export
 	|	<div id=""content""></div>
 	|	<script src=""https://cdn.jsdelivr.net/npm/marked/lib/marked.min.js""></script>
 	| 	<script>
+	|		marked.setOptions({sanitize: true});
 	|  		document.getElementById('content').innerHTML = marked('%1');
 	|	</script>
 	|</article>
@@ -25,6 +26,12 @@ Function MarkdownToHTML(Val Text) Export
 	
 	Text = StrReplace(Text, Chars.LF, "\r\n");
 	Text = StrReplace(Text, "'", "\'");
+	// Text = StrReplace(Text, """", "\""");
+	// Text = StrReplace(Text, "\", "\\");
+	// Text = СтрЗаменить(Text, "<", "\<");
+	// Text = СтрЗаменить(Text, ">", "\>");
+	// Text = СтрЗаменить(Text, "`", "\`");
+	// Text = СтрЗаменить(Text, "_", "\_");
 	
 	Return StrTemplate(Template, Text);
 	

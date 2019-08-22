@@ -24,6 +24,9 @@ Procedure InitFormData(Form, OwnerGroup)
 	
 	// Создание элементов формы редактора
 	CreateFormItems(Form, OwnerGroup, NewCommands);
+
+	// Установка свойств по умолчанию
+	SetDefaultParameters(Form);
 	
 EndProcedure
 
@@ -57,6 +60,12 @@ Procedure CreateFormAttributes(Form)
 	
 EndProcedure
 
+// Создает команды для управления функционалом редактора.
+//
+// Parameters:
+//  Form        - ManagedForm - форма, в которой будут созданы команды.
+//  NewCommands - Structure - структура, в которую будут помещены описания созданных команд.
+//
 Procedure CreateFormCommands(Form, NewCommands)
 	
 	// Программное создание команд
@@ -348,6 +357,36 @@ Procedure CreateFormItems(Form, OwnerGroup, Commands)
 
 #EndRegion
 	
+EndProcedure
+
+Procedure SetDefaultParameters(Form, Val DefaultParameters = Undefined)
+
+	If DefaultParameters = Undefined Then
+		DefaultParameters = New Structure;
+		DefaultParameters.Insert("MarkdownEditorAttribute_EditMode", 0);
+		DefaultParameters.Insert("EditorModeCheckedButton", "MarkdownEditorItem_EditorModeButton");
+	EndIf;
+
+	// Установка значений реквизитов формы
+	Form.MarkdownEditorAttribute_EditMode = DefaultParameters.MarkdownEditorAttribute_EditMode;
+
+	// Установка свойств элементов формы
+	If DefaultParameters.MarkdownEditorAttribute_EditMode = 0 Then
+		Form.Items.MarkdownEditorItem_EditorModeButton.Check = True;
+		Form.Items.MarkdownEditorItem_EditorField.Visible = True;
+		Form.Items.MarkdownEditorItem_HTMLViewerField.Visible = False;
+	
+	ElsIf DefaultParameters.MarkdownEditorAttribute_EditMode = 1 Then
+		Form.Items.MarkdownEditorItem_ViewModeButton.Check = True;
+		Form.Items.MarkdownEditorItem_EditorField.Visible = False;
+		Form.Items.MarkdownEditorItem_HTMLViewerField.Visible = True;
+
+	ElsIf DefaultParameters.MarkdownEditorAttribute_EditMode = 2 Then
+		Form.Items.MarkdownEditorItem_PreviewModeButton.Check = True;
+		Form.Items.MarkdownEditorItem_EditorField.Visible = True;
+		Form.Items.MarkdownEditorItem_HTMLViewerField.Visible = True;
+	EndIf;
+
 EndProcedure
 
 #EndRegion

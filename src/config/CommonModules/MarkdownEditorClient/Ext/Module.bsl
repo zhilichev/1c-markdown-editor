@@ -3,6 +3,13 @@
 
 Procedure ExecCommand(Form, Command) Export
 	
+	// Признак необходимости обновления HTML-превью
+	Var RefreshHTML;
+
+	// Обновление поля HTML включено по умолчанию. В тех обработчиках, где нужно отключить,
+	// прописать RefreshHTML = False.
+	RefreshHTML = True;
+
 	CommandName = Command.Name;
 	
 	// Обработка команды переключения режимов редактора
@@ -11,6 +18,8 @@ Procedure ExecCommand(Form, Command) Export
 		OR CommandName = "MarkdownEditorCommand_PreviewMode" Then
 
 		SwitchMode(Form, CommandName);
+
+		RefreshHTML = False
 		
 	// Обработка команды оформления жирным шрифтов
 	ElsIf CommandName = "MarkdownEditorCommand_SetBoldFont" Then
@@ -35,8 +44,9 @@ Procedure ExecCommand(Form, Command) Export
 	// Обработка команды вставки ссылки на изображение
 	ElsIf CommandName = "MarkdownEditorCommand_InsertImage" Then
 		InsertImage(Form);
-		
 	EndIf;
+
+	OnEditTextChange(Form, Form.MarkdownEditorAttribute_Text, True);
 	     
 EndProcedure
 
