@@ -189,22 +189,30 @@ Procedure SwitchMode(Form, CommandName)
 	Else
 		Form.MarkdownEditorAttribute_EditMode = 2;
 	EndIf;
-		
-	Items = Form.Items;
-	Items.MarkdownEditorItem_EditorModeButton.Check = (Form.MarkdownEditorAttribute_EditMode = 0);
-	Items.MarkdownEditorItem_ViewModeButton.Check = (Form.MarkdownEditorAttribute_EditMode = 1);
-	Items.MarkdownEditorItem_PreviewModeButton.Check = (Form.MarkdownEditorAttribute_EditMode = 2);
 	
 	If Form.MarkdownEditorAttribute_EditMode = 0 Then
 		Form.MarkdownEditorAttribute_HTML = "";
 	Else
 		Form.MarkdownEditorAttribute_HTML = MarkdownEditorClientServer.MarkdownToHTML(
 			Form.MarkdownEditorAttribute_Text);
-	EndIf;
+	EndIf;	
+		
+	Items = Form.Items;
+	Items.MarkdownEditorItem_EditorModeButton.Check = (Form.MarkdownEditorAttribute_EditMode = 0);
+	Items.MarkdownEditorItem_ViewModeButton.Check = (Form.MarkdownEditorAttribute_EditMode = 1);
+	Items.MarkdownEditorItem_PreviewModeButton.Check = (Form.MarkdownEditorAttribute_EditMode = 2);
+	
+	// Расчет доступности редактора и панелей редактирования
+	EditorEnabled = (Form.MarkdownEditorAttribute_EditMode = 0 OR Form.MarkdownEditorAttribute_EditMode = 2);
 	
 	// Управление видимостью редактора и просмотрщика
-	Items.MarkdownEditorItem_EditorField.Visible = (Form.MarkdownEditorAttribute_EditMode = 0 OR Form.MarkdownEditorAttribute_EditMode = 2);
+	Items.MarkdownEditorItem_EditorField.Visible = EditorEnabled;
 	Items.MarkdownEditorItem_HTMLViewerField.Visible = (Form.MarkdownEditorAttribute_EditMode = 1 OR Form.MarkdownEditorAttribute_EditMode = 2);	
+	
+	// Управление доступностью команд панели редактирования
+	Items.MarkdownEditorItem_FontStyleButtonsGroup.Enabled = EditorEnabled;
+	Items.MarkdownEditorItem_ListsButtonsGroup.Enabled = EditorEnabled;
+	Items.MarkdownEditorItem_InsertButtonsGroup.Enabled = EditorEnabled;
 	
 EndProcedure
 
