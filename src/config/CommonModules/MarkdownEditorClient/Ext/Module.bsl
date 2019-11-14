@@ -33,6 +33,10 @@ Procedure ExecCommand(Form, Command) Export
 	ElsIf CommandName = "MarkdownEditorCommand_SetStrikethroughFont" Then
 		SetFontStyle(Form, "~~", NStr("en = '~~strikethrough font~~'"));
 		
+	// Обработка команды оформления ненумерованного списка
+	ElsIf CommandName = "MarkdownEditorCommand_InsertBulletList" Then
+		InsertBulletList(Form);
+
 	// Обработка команды добавления ссылки
 	ElsIf CommandName = "MarkdownEditorCommand_InsertLink" Then
 	    InsertLink(Form);
@@ -84,6 +88,23 @@ Function GetCursorPos(EditorItem)
 	Return CursorPos;
 	
 EndFunction
+
+Procedure InsertBulletList(Form)
+
+	EditorItem = Form.Items.MarkdownEditorItem_EditorField;
+
+	// Получение текущего положения курсора в редакторе
+	CursorPos = GetCursorPos(EditorItem);
+	
+	SelectedText = EditorItem.SelectedText;
+
+	// If IsBlankString(SelectedText) Then
+
+	// Else
+	// 	SelectedText = StrReplace(SelectedText, Sym);
+	// EndIf;
+
+EndProcedure
 
 Procedure InsertCodeBlock(Form)
 	
