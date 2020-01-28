@@ -11,16 +11,16 @@ REM Каталог исходников конфигурации внутри р
 SET SourcePath="%RepositoryPath%\src\config"
 
 REM Адрес информационной базы
-SET Database="dev-1c-07:3541\07_zhilichev_gitflow"
+SET Database="C:\home\1c-db\md-editor"
 
 REM Файл лога журнала
 SET DumpFile="%RepositoryPath%\build.log"
 
 REM Запуск загрузки конфигурации из файлов
-%PlatformExec% DESIGNER /S%Database% /LoadConfigFromFiles %SourcePath% /UpdateDBCfg -Dynamic- -WarningsAsErrors /DumpResult %DumpFile%
+%PlatformExec% DESIGNER /F%Database% /LoadConfigFromFiles %SourcePath% /UpdateDBCfg -Dynamic- -WarningsAsErrors /DumpResult %DumpFile%
 
 @ECHO Configuration build completed. See %DumpFile% for results
 @ECHO Starting 1C:Enterprise Designer
 
 REM Запуск Конфигуратора
-START "" %PlatformExec% DESIGNER /S%Database% /LEN
+START "" %PlatformExec% DESIGNER /F%Database% /LEN
