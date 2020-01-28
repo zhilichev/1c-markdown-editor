@@ -6,6 +6,9 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	MarkdownEditor.Constructor(ThisObject, Items.DefaultGroup);
 	
+	// Установка в поле примера текста Markdown
+	ThisObject.MarkdownEditorAttribute_Text = DataProcessors.EditorTest.GetTemplate("SampleMarkdownText").GetText();
+	
 EndProcedure
 
 &AtClient

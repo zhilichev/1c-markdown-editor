@@ -98,11 +98,11 @@ Procedure InsertBulletList(Form)
 	
 	SelectedText = EditorItem.SelectedText;
 
-	// If IsBlankString(SelectedText) Then
+	//If IsBlankString(SelectedText) Then
 
-	// Else
-	// 	SelectedText = StrReplace(SelectedText, Sym);
-	// EndIf;
+	//Else
+	//	SelectedText = StrReplace(SelectedText, Sym)
+	//EndIf;
 
 EndProcedure
 
