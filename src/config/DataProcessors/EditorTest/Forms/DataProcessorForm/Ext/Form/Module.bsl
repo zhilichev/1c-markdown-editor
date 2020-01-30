@@ -4,6 +4,7 @@ Var CursorPos;
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	// Вызов конструктора редактора
 	MarkdownEditor.Constructor(ThisObject, Items.DefaultGroup);
 	
 	// Установка в поле примера текста Markdown
@@ -22,6 +23,13 @@ Procedure NotificationProcessing(EventName, Parameter, Source)
 EndProcedure
 
 #Region AttachableHandlersOfMarkdownEditor
+
+&AtClient
+Procedure Attachable_MarkdownEditonOnHTMLFieldClick(EventData, StandardProcessing)
+	
+	// Обработчик кликов в поле HTML-документа
+	
+EndProcedure
 
 &AtClient
 Procedure Attachable_MarkdownEditorOnEditTextChange(Item, Text, StandardProcessing)

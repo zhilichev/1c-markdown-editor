@@ -25,14 +25,14 @@
 			</Synonym>
 			<Comment/>
 			<UseStandardCommands>true</UseStandardCommands>
-			<DefaultForm>DataProcessor.EditorTest.Form.Form</DefaultForm>
+			<DefaultForm>DataProcessor.EditorTest.Form.DataProcessorForm</DefaultForm>
 			<AuxiliaryForm/>
 			<IncludeHelpInContents>false</IncludeHelpInContents>
 			<ExtendedPresentation/>
 			<Explanation/>
 		</Properties>
 		<ChildObjects>
-			<Form>Form</Form>
+			<Form>DataProcessorForm</Form>
 			<Template>SampleMarkdownText</Template>
 		</ChildObjects>
 	</DataProcessor>

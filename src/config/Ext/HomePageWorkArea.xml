@@ -3,7 +3,7 @@
 	<WorkingAreaTemplate>OneColumn</WorkingAreaTemplate>
 	<Column>
 		<Item>
-			<Form>DataProcessor.EditorTest.Form.Form</Form>
+			<Form>DataProcessor.EditorTest.Form.DataProcessorForm</Form>
 			<Height>10</Height>
 			<Visibility>
 				<xr:Common>true</xr:Common>

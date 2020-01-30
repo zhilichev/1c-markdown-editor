@@ -352,8 +352,11 @@ Procedure CreateFormItems(Form, OwnerGroup, Commands)
 	HTMLViewerField.HorizontalStretch = True;
 	HTMLViewerField.VerticalStretch = True;	
 	
-	// TODO: Написать обработчик нажатия
-	//HTMLViewerField.SetAction("OnClick", "Attachable_MarkdownEditonOnHTMLFieldClick");
+	// Подключение обработчика нажатия в поле HTML-документа, если соответствующая настройка
+	// включена.
+	If Constants.RedefineOnClickActionInMarkdownViewer.Get() Then
+		HTMLViewerField.SetAction("OnClick", "Attachable_MarkdownEditonOnHTMLFieldClick");
+	EndIf;
 
 #EndRegion
 	

@@ -140,6 +140,7 @@
 		<ChildObjects>
 			<Language>English</Language>
 			<Language>Russian</Language>
+			<Subsystem>MarkdownEditor</Subsystem>
 			<CommonPicture>Bold</CommonPicture>
 			<CommonPicture>BulletList</CommonPicture>
 			<CommonPicture>CodeBlock</CommonPicture>
@@ -157,6 +158,7 @@
 			<CommonModule>MarkdownEditorServerCached</CommonModule>
 			<CommonModule>MarkdownEditorServerCall</CommonModule>
 			<CommonModule>MarkdownEditorClientServer</CommonModule>
+			<Constant>RedefineOnClickActionInMarkdownViewer</Constant>
 			<CommonForm>CodeBlock</CommonForm>
 			<CommonForm>InsertImage</CommonForm>
 			<CommonForm>InsertLink</CommonForm>
