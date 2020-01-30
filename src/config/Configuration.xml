@@ -48,9 +48,9 @@
 			</UsePurposes>
 			<ScriptVariant>English</ScriptVariant>
 			<DefaultRoles/>
-			<Vendor/>
-			<Version/>
-			<UpdateCatalogAddress/>
+			<Vendor>Alexander Zhilichev</Vendor>
+			<Version>1.0.0.0</Version>
+			<UpdateCatalogAddress>https://github.com/zhilichev/1c-markdown-editor</UpdateCatalogAddress>
 			<IncludeHelpInContents>false</IncludeHelpInContents>
 			<UseManagedFormInOrdinaryApplication>false</UseManagedFormInOrdinaryApplication>
 			<UseOrdinaryFormInManagedApplication>false</UseOrdinaryFormInManagedApplication>
