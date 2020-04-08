@@ -66,6 +66,27 @@ EndProcedure
 
 #Region InternalProceduresAndFunctions
 
+Function IsInsertBulletListMode(Val Text, Val BeginLine, Val EndLine, Val LineCount = Undefined)
+	
+	InsertMode = False;
+	
+	If LineCount = Undefined Then
+		LineCount = StrLineCount(Text);
+	EndIf;
+	
+	For N = BeginLine To EndLine Do
+		LineText = StrGetLine(Text, N);
+		
+		If NOT StrStartWith(LineText, "- ") Then
+			InsertMode = True;
+			Break;
+		EndIf;
+	EndDo;
+	
+	Return InsertMode;
+	
+EndFunction
+
 // Return description position of editor's cursor.
 //
 // Parameters:
@@ -81,6 +102,7 @@ Function GetCursorPos(EditorItem)
 	CursorPos.Insert("BeginningOfColumn", 0);
 	CursorPos.Insert("EndOfRow", 0);
 	CursorPos.Insert("EndOfColumn", 0);
+	CursorPos.Insert("FullSelection", False);
 	
 	EditorItem.GetTextSelectionBounds(CursorPos.BeginningOfRow, CursorPos.BeginningOfColumn,
 		CursorPos.EndOfRow, CursorPos.EndOfColumn);
@@ -96,13 +118,47 @@ Procedure InsertBulletList(Form)
 	// Получение текущего положения курсора в редакторе
 	CursorPos = GetCursorPos(EditorItem);
 	
-	SelectedText = EditorItem.SelectedText;
-
-	//If IsBlankString(SelectedText) Then
-
-	//Else
-	//	SelectedText = StrReplace(SelectedText, Sym)
-	//EndIf;
+	SourceText = Form.MarkdownEditorAttribute_Text;
+	LineCount = StrLineCount(SourceText);
+	
+	// TODO: Работу со строками можно переделать с метода StrGetLine на массив строк
+	InsertMode = IsInsertBulletListMode(SourceText, CursorPos.BeginningOfRow, CursorPos.EndOfRow, LineCount);   
+	
+	SelectedLines = New Array;
+	For N = 1 To LineCount Do
+		LineText = StrGetLine(SourceText, N);
+		
+		If (N >= CursorPos.BeginningOfRow) AND (N <= CursorPos.EndOfRow) Then
+			If InsertMode Then
+				If NOT StrStartWith(LineText, "- ") Then
+					LineText = "- " + LineText;
+				EndIf;
+			Else
+				LineText = Mid(LineText, 3);
+			EndIf;
+		EndIf;
+		SelectedLines.Add(LineText);
+	EndDo;
+	
+	Form.MarkdownEditorAttribute_Text = StrConcat(SelectedLines, Chars.CR);
+	
+	// Сдвиг позиций выделения текста за счет того, что добавлены или удалены символы
+	If InsertMode Then
+		CursorPos.BeginningOfColumn = CursorPos.BeginningOfColumn + 2;
+		CursorPos.EndOfColumn = CursorPos.EndOfColumn + 2;
+	Else
+		If CursorPos.BeginningOfColumn > 3 Then
+			CursorPos.BeginningOfColumn = CursorPos.BeginningOfColumn - 2;
+		EndIf;
+		
+		If CursorPos.EndOfColumn > 3 Then
+			CursorPos.EndOfColumn = CursorPos.EndOfColumn - 2;
+		EndIf;
+	EndIf;
+	
+	CursorPos.FullSelection = True;
+	
+	Notify("MarkdownEditorEvent_RestoreCursorPosition", CursorPos, Form.UUID);
 
 EndProcedure
 
