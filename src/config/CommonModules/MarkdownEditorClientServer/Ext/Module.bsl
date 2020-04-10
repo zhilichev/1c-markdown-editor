@@ -39,13 +39,7 @@ EndFunction
 
 Function MultilineTextToArray(Val Text) Export
 	
-	TextLines = New Array;
-	
-	LineCount = StrLineCount(Text);
-	
-	For N = 1 To LineCount Do
-		TextLines.Add(StrGetLine(Text, N));
-	EndDo;
+	TextLines = StrSplit(Text, Chars.LF, True);
 	
 	Return TextLines;
 	

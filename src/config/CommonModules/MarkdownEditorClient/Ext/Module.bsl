@@ -48,9 +48,12 @@ Procedure ExecCommand(Form, Command) Export
 	// Обработка команды вставки ссылки на изображение
 	ElsIf CommandName = "MarkdownEditorCommand_InsertImage" Then
 		InsertImage(Form);
+		RefreshHTML = False;
 	EndIf;
 
-	OnEditTextChange(Form, Form.MarkdownEditorAttribute_Text, True);
+	If RefreshHTML Then
+		OnEditTextChange(Form, Form.MarkdownEditorAttribute_Text, True);
+	EndIf;
 	     
 EndProcedure
 
@@ -66,18 +69,14 @@ EndProcedure
 
 #Region InternalProceduresAndFunctions
 
-Function IsInsertBulletListMode(Val Text, Val BeginLine, Val EndLine, Val LineCount = Undefined)
+Function IsInsertBulletListMode(Val TextLines, Val BeginLine, Val EndLine)
 	
 	InsertMode = False;
 	
-	If LineCount = Undefined Then
-		LineCount = StrLineCount(Text);
-	EndIf;
-	
 	For N = BeginLine To EndLine Do
-		LineText = StrGetLine(Text, N);
+		Text = TextLines[N];
 		
-		If NOT StrStartWith(LineText, "- ") Then
+		If NOT StrStartWith(Text, "- ") Then
 			InsertMode = True;
 			Break;
 		EndIf;
@@ -119,39 +118,34 @@ Procedure InsertBulletList(Form)
 	CursorPos = GetCursorPos(EditorItem);
 	
 	SourceText = Form.MarkdownEditorAttribute_Text;
-	LineCount = StrLineCount(SourceText);
 	
-	// TODO: Работу со строками можно переделать с метода StrGetLine на массив строк
-	InsertMode = IsInsertBulletListMode(SourceText, CursorPos.BeginningOfRow, CursorPos.EndOfRow, LineCount);   
+	LinesArray = MarkdownEditorClientServer.MultilineTextToArray(SourceText);
+	InsertMode = IsInsertBulletListMode(LinesArray, CursorPos.BeginningOfRow - 1, CursorPos.EndOfRow - 1);
 	
-	SelectedLines = New Array;
-	For N = 1 To LineCount Do
-		LineText = StrGetLine(SourceText, N);
+	For N = (CursorPos.BeginningOfRow - 1) To (CursorPos.EndOfRow - 1) Do
+		LineText = LinesArray[N];
 		
-		If (N >= CursorPos.BeginningOfRow) AND (N <= CursorPos.EndOfRow) Then
-			If InsertMode Then
-				If NOT StrStartWith(LineText, "- ") Then
-					LineText = "- " + LineText;
-				EndIf;
-			Else
-				LineText = Mid(LineText, 3);
+		If InsertMode Then
+			If NOT StrStartWith(LineText, "- ") Then
+				LinesArray.Set(N, "- " + LineText)
 			EndIf;
+		Else
+			LinesArray.Set(N, Mid(LineText, 3))
 		EndIf;
-		SelectedLines.Add(LineText);
 	EndDo;
 	
-	Form.MarkdownEditorAttribute_Text = StrConcat(SelectedLines, Chars.CR);
+	Form.MarkdownEditorAttribute_Text = StrConcat(LinesArray, Chars.LF);
 	
 	// Сдвиг позиций выделения текста за счет того, что добавлены или удалены символы
 	If InsertMode Then
 		CursorPos.BeginningOfColumn = CursorPos.BeginningOfColumn + 2;
 		CursorPos.EndOfColumn = CursorPos.EndOfColumn + 2;
 	Else
-		If CursorPos.BeginningOfColumn > 3 Then
+		If CursorPos.BeginningOfColumn >= 3 Then
 			CursorPos.BeginningOfColumn = CursorPos.BeginningOfColumn - 2;
 		EndIf;
 		
-		If CursorPos.EndOfColumn > 3 Then
+		If CursorPos.EndOfColumn >= 3 Then
 			CursorPos.EndOfColumn = CursorPos.EndOfColumn - 2;
 		EndIf;
 	EndIf;
@@ -202,6 +196,20 @@ Procedure OnCodeBlockFormClose(CloseResult, OwnerForm) Export
 EndProcedure
 
 Procedure OnImageFormClose(CloseResult, OwnerForm) Export
+	
+	If CloseResult = Undefined Then
+		Return;
+	EndIf;
+	
+	EditorItem = OwnerForm.Items.MarkdownEditorItem_EditorField;
+	
+	// Получение текущего положения курсора в редакторе
+	CursorPos = GetCursorPos(EditorItem);
+	
+	EditorItem.SelectedText = StrTemplate("![%1](%2)", CloseResult.AltText, CloseResult.URL);
+	
+	// Восстановление положения курсора
+	Notify("MarkdownEditorEvent_RestoreCursorPosition", CursorPos, OwnerForm.UUID);	
 	
 EndProcedure
 

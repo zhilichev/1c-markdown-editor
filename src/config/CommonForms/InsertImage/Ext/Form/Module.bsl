@@ -3,9 +3,8 @@
 Procedure InsertLink(Command)
 	
 	Result = New Structure;
-	Result.Insert("Address", Address);
-	Result.Insert("LinkText", LinkText);
-	Result.Insert("Title", LinkTitle);
+	Result.Insert("URL", ImageURL);
+	Result.Insert("AltText", AltText);
 	
 	Close(Result);
 	

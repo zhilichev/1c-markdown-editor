@@ -1,26 +1,26 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.9">
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5">
 	<Width>47</Width>
 	<Customizable>false</Customizable>
 	<AutoCommandBar name="FormCommandBar" id="-1">
 		<Autofill>false</Autofill>
 	</AutoCommandBar>
 	<ChildItems>
-		<InputField name="Address" id="1">
-			<DataPath>Address</DataPath>
+		<InputField name="ImageURL" id="1">
+			<DataPath>ImageURL</DataPath>
 			<InputHint>
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>https://</v8:content>
 				</v8:item>
 			</InputHint>
-			<ContextMenu name="AddressContextMenu" id="2"/>
-			<ExtendedTooltip name="AddressExtendedTooltip" id="3"/>
+			<ContextMenu name="ImageURLContextMenu" id="2"/>
+			<ExtendedTooltip name="ImageURLExtendedTooltip" id="3"/>
 		</InputField>
-		<InputField name="LinkText" id="4">
-			<DataPath>LinkText</DataPath>
-			<ContextMenu name="LinkTextContextMenu" id="5"/>
-			<ExtendedTooltip name="LinkTextExtendedTooltip" id="6"/>
+		<InputField name="AltText" id="4">
+			<DataPath>AltText</DataPath>
+			<ContextMenu name="AltTextContextMenu" id="5"/>
+			<ExtendedTooltip name="AltTextExtendedTooltip" id="6"/>
 		</InputField>
 		<InputField name="Title" id="13">
 			<DataPath>LinkTitle</DataPath>
@@ -53,11 +53,11 @@
 		</CommandBar>
 	</ChildItems>
 	<Attributes>
-		<Attribute name="Address" id="1">
+		<Attribute name="ImageURL" id="1">
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Address</v8:content>
+					<v8:content>Link</v8:content>
 				</v8:item>
 			</Title>
 			<Type>
@@ -68,11 +68,11 @@
 				</v8:StringQualifiers>
 			</Type>
 		</Attribute>
-		<Attribute name="LinkText" id="2">
+		<Attribute name="AltText" id="2">
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Link text</v8:content>
+					<v8:content>Alt text</v8:content>
 				</v8:item>
 			</Title>
 			<Type>
@@ -118,7 +118,6 @@
 				</v8:item>
 			</ToolTip>
 			<Action>InsertLink</Action>
-			<CurrentRowUse>DontUse</CurrentRowUse>
 		</Command>
 	</Commands>
 </Form>
