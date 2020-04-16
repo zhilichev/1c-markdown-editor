@@ -1,9 +1,17 @@
 ﻿
 #Region Interface
 
-Procedure Constructor(Form, OwnerGroup) Export
+// Процедура-конструктор редактора. Точка входа в процесс программного создания
+// редактора.
+//
+// Параметры:
+//  Form  - ManagedForm - форма, на которой будет размещен редактор.
+//  Group - FormGroup - группа-владелец, внутри которой будут созданы 
+//          элементы формы.
+//
+Procedure Constructor(Form, Group) Export
 	
-	InitFormData(Form, OwnerGroup);
+	InitFormData(Form, Group);
 	
 EndProcedure
 
@@ -11,25 +19,37 @@ EndProcedure
 
 #Region InternalProceduresAndFunctions
 
-Procedure InitFormData(Form, OwnerGroup)
+// Запускает методы создания реквизитов, команд и элементов формы для редактора.
+//
+// Параметры:
+//  Form  - ManagedForm - форма, на которой будет размещен редактор.
+//  Group - FormGroup - группа-владелец, внутри которой будут созданы 
+//          элементы формы.
+//
+Procedure InitFormData(Form, Group)
 	
 	// Список программно-создаваемых команд  формы
-	Var NewCommands;
+	Var CommandList;
 	
 	// Создание дополнительных реквизитов формы
 	CreateFormAttributes(Form);
 	
 	// Создание дополнительных команд формы
-	CreateFormCommands(Form, NewCommands);
+	CreateFormCommands(Form, CommandList);
 	
 	// Создание элементов формы редактора
-	CreateFormItems(Form, OwnerGroup, NewCommands);
+	CreateFormItems(Form, Group, CommandList);
 
 	// Установка свойств по умолчанию
 	SetDefaultParameters(Form);
 	
 EndProcedure
 
+// Создает реквизиты формы, которые необходимы для работы редактора.
+//
+// Параметры:
+//  Form  - ManagedForm - форма, для которой будут созданы реквизиты.
+//
 Procedure CreateFormAttributes(Form)
 	
 	// Программное создание необходимых реквизитов на форме
@@ -41,7 +61,7 @@ Procedure CreateFormAttributes(Form)
 	EditorMode = New FormAttribute("MarkdownEditorAttribute_EditMode",
 		New TypeDescription("Number", New NumberQualifiers(1, 0, AllowedSign.Nonnegative)));
 		
-	// Реквизит MarkdownEditorAttribute_Text хранит исходный текст
+	// Реквизит MarkdownEditorAttribute_Text хранит исходный plane-текст
 	MarkdownText = New FormAttribute("MarkdownEditorAttribute_Text", 
 		New TypeDescription("String"), , , True);
 		
@@ -60,11 +80,11 @@ Procedure CreateFormAttributes(Form)
 	
 EndProcedure
 
-// Создает команды для управления функционалом редактора.
+// Создает команды для управления редактором.
 //
 // Parameters:
-//  Form        - ManagedForm - форма, в которой будут созданы команды.
-//  NewCommands - Structure - структура, в которую будут помещены описания созданных команд.
+//  Form        - ManagedForm - форма, для которой будут созданы команды.
+//  NewCommands - Structure - структура, в которую будут помещены свойства новых команд.
 //
 Procedure CreateFormCommands(Form, NewCommands)
 	
@@ -181,6 +201,13 @@ EndProcedure
 ////////////////////////////////////////////////////////////////////////////////
 // Процедуры и функции создания элементов формы редактора
 
+// Создает элементы формы интерфейса редактора.
+//
+// Параметры:
+//  Form       - ManagedForm - форма, для которой создается редактор.
+//  OwnerGroup - FormGroup - группа элементов формы, внутри которой будет создан редактор.
+//  Commands   - Structure - структура со свойствами команд для редактора.
+//
 Procedure CreateFormItems(Form, OwnerGroup, Commands)
 	
 	Items = Form.Items;
@@ -359,29 +386,35 @@ Procedure CreateFormItems(Form, OwnerGroup, Commands)
 	
 EndProcedure
 
-Procedure SetDefaultParameters(Form, Val DefaultParameters = Undefined)
+// Устанавливает настройки и параметры редактора значениями по умолчанию.
+//
+// Параметры:
+//  Form      - ManagedForm - форма-владелец редактора.
+//  DefParams - Structure - структура со значениями параметров.
+// 
+Procedure SetDefaultParameters(Form, Val DefParams = Undefined)
 
-	If DefaultParameters = Undefined Then
-		DefaultParameters = New Structure;
-		DefaultParameters.Insert("MarkdownEditorAttribute_EditMode", 0);
-		DefaultParameters.Insert("EditorModeCheckedButton", "MarkdownEditorItem_EditorModeButton");
+	If DefParams = Undefined Then
+		DefParams = New Structure;
+		DefParams.Insert("MarkdownEditorAttribute_EditMode", 0);
+		DefParams.Insert("EditorModeCheckedButton", "MarkdownEditorItem_EditorModeButton");
 	EndIf;
 
 	// Установка значений реквизитов формы
-	Form.MarkdownEditorAttribute_EditMode = DefaultParameters.MarkdownEditorAttribute_EditMode;
+	Form.MarkdownEditorAttribute_EditMode = DefParams.MarkdownEditorAttribute_EditMode;
 
 	// Установка свойств элементов формы
-	If DefaultParameters.MarkdownEditorAttribute_EditMode = 0 Then
+	If DefParams.MarkdownEditorAttribute_EditMode = 0 Then
 		Form.Items.MarkdownEditorItem_EditorModeButton.Check = True;
 		Form.Items.MarkdownEditorItem_EditorField.Visible = True;
 		Form.Items.MarkdownEditorItem_HTMLViewerField.Visible = False;
 	
-	ElsIf DefaultParameters.MarkdownEditorAttribute_EditMode = 1 Then
+	ElsIf DefParams.MarkdownEditorAttribute_EditMode = 1 Then
 		Form.Items.MarkdownEditorItem_ViewModeButton.Check = True;
 		Form.Items.MarkdownEditorItem_EditorField.Visible = False;
 		Form.Items.MarkdownEditorItem_HTMLViewerField.Visible = True;
 
-	ElsIf DefaultParameters.MarkdownEditorAttribute_EditMode = 2 Then
+	ElsIf DefParams.MarkdownEditorAttribute_EditMode = 2 Then
 		Form.Items.MarkdownEditorItem_PreviewModeButton.Check = True;
 		Form.Items.MarkdownEditorItem_EditorField.Visible = True;
 		Form.Items.MarkdownEditorItem_HTMLViewerField.Visible = True;
