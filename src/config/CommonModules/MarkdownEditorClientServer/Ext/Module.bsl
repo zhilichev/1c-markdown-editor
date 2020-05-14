@@ -37,6 +37,12 @@ Function MarkdownToHTML(Val Text) Export
 	
 EndFunction
 
+Function ArrayToMultilineText(Val Array) Export
+
+	Return StrConcat(LinesArray, Chars.LF);
+
+EndFunction
+
 Function MultilineTextToArray(Val Text) Export
 	
 	TextLines = StrSplit(Text, Chars.LF, True);

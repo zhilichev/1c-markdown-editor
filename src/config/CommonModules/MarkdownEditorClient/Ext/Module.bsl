@@ -19,7 +19,7 @@ Procedure ExecCommand(Form, Command) Export
 
 		SwitchMode(Form, CommandName);
 
-		RefreshHTML = False
+		RefreshHTML = False;
 		
 	// Обработка команды оформления жирным шрифтов
 	ElsIf CommandName = "MarkdownEditorCommand_SetBoldFont" Then
@@ -69,22 +69,8 @@ EndProcedure
 
 #Region InternalProceduresAndFunctions
 
-Function IsInsertBulletListMode(Val TextLines, Val BeginLine, Val EndLine)
-	
-	InsertMode = False;
-	
-	For N = BeginLine To EndLine Do
-		Text = TextLines[N];
-		
-		If NOT StrStartWith(Text, "- ") Then
-			InsertMode = True;
-			Break;
-		EndIf;
-	EndDo;
-	
-	Return InsertMode;
-	
-EndFunction
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Процедуры и функции определения и изменения свойств редактора
 
 // Return description position of editor's cursor.
 //
@@ -110,43 +96,135 @@ Function GetCursorPos(EditorItem)
 	
 EndFunction
 
-Procedure InsertBulletList(Form)
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Процедуры и функции обработки текста
 
-	EditorItem = Form.Items.MarkdownEditorItem_EditorField;
+// Удаляет из начала каждой строки многострочного текста символы, указанные в параметре Chars.
+//
+// Параметры:
+//  TextLines - Массив - массив строк многострочного текста.
+//  Chars     - Строка - строка символов, которую необходимо удалить.
+//  BeginLine - Число - индекс первого обрабатываемого элемента массива TextLines.
+//  EndLine   - Число - индекс последнего обрабатываемого элемента массива TextLines.
+//
+Procedure DelCharsFromBeginOfLines(TextLines, Val Chars, Val BeginLine = 0, Val EndLine = Undefined)
 
-	// Получение текущего положения курсора в редакторе
-	CursorPos = GetCursorPos(EditorItem);
+	// Если конечный элемент не определен, то поиск идет по всем элементам массива
+	If EndLine = Undefined Then
+		EndLine = TextLines.UBound();
+	EndIf;
+
+	// Определение длины искомой строки. Значение +1 добавляется потому, что символы в строке нумеруются с единицы
+	CharsStrLen = StrLen(Chars) + 1;
 	
-	SourceText = Form.MarkdownEditorAttribute_Text;
-	
-	LinesArray = MarkdownEditorClientServer.MultilineTextToArray(SourceText);
-	InsertMode = IsInsertBulletListMode(LinesArray, CursorPos.BeginningOfRow - 1, CursorPos.EndOfRow - 1);
-	
-	For N = (CursorPos.BeginningOfRow - 1) To (CursorPos.EndOfRow - 1) Do
-		LineText = LinesArray[N];
-		
-		If InsertMode Then
-			If NOT StrStartWith(LineText, "- ") Then
-				LinesArray.Set(N, "- " + LineText)
-			EndIf;
-		Else
-			LinesArray.Set(N, Mid(LineText, 3))
+	For N = BeginLine To EndLine Do
+		SearchToStrIn = TextLines[N];
+
+		If StrStartWith(SearchToStrIn, Chars) Then
+			TextLines.Set(N, Mid(SearchToStrIn, CharsStrLen));
 		EndIf;
 	EndDo;
+
+EndProcedure
+
+// Возвращает номер первой строки многострочного текста, в начале которой найдено значение из параметра Chars.
+//
+// Параметры:
+//  TextLines - Массив - массив строк многострочного текста.
+//  Chars     - Строка - строка символов, которую необходимо найти.
+//  BeginLine - Число  - индекс первого обрабатываемого элемента массива TextLines.
+//  EndLine   - Число  - индекс последнего обрабатываемого элемента массива TextLines.
+//
+// Возвращаемое значение:
+//  Число. Индекс элемента массива. Если значение не найдено, возвращается -1.
+//
+Function FindCharsInLines(Val TextLines, Val Chars, Val BeginLine = 0, Val EndLine = Undefined)
+
+	// Определяется результат, если не получится найти искомое значение
+	ItemIndex = -1;
+
+	// Если конечный элемент не определен, поиск идет по всем элементам массива
+	If EndLine = Undefined Then
+		EndLine = TextLines.UBound();
+	EndIf;
+
+	For N = BeginLine To EndLine Do
+		SearchToStrIn = TextLines[N];
+
+		// Поиск ведется до первого совпадения начала строки с искомыми символами
+		If StrStartWith(SearchToStrIn, Chars) Then
+			ItemIndex = N;
+			Break;
+		EndIf;
+	EndDo;
+
+	Return ItemIndex;
+
+EndFunction
+
+// Вставляет в начало каждой строки многострочного текста символы, указанные в параметре Chars.
+//
+// Параметры:
+//  TextLines - Массив - массив строк многострочного текста.
+//  Chars     - Строка - строка символов, которую необходимо вставить.
+//  BeginLine - Число - индекс первого обрабатываемого элемента массива TextLines.
+//  EndLine   - Число - индекс последнего обрабатываемого элемента массива TextLines.
+//
+Procedure InsertCharsAtBeginOfLines(TextLines, Val Chars, Val BeginLine = 0, Val EndLine = Undefined)
+
+	// Если конечный элемент не определен, то поиск идет по всем элементам массива
+	If EndLine = Undefined Then
+		EndLine = TextLines.UBound();
+	EndIf;
 	
-	Form.MarkdownEditorAttribute_Text = StrConcat(LinesArray, Chars.LF);
+	For N = BeginLine To EndLine Do
+		SearchToStrIn = TextLines[N];
+
+		If NOT StrStartWith(SearchToStrIn, Chars) Then
+			TextLines.Set(N, Chars + SearchToStrIn);
+		EndIf;
+	EndDo;	
+
+EndProcedure
+
+Procedure InsertBulletList(Form)
+
+	// Получение текущего положения курсора в редакторе
+	CursorPos = GetCursorPos(Form.Items.MarkdownEditorItem_EditorField);
+
+	// Разделение многострочной строки на массив строк
+	LinesArray = MarkdownEditorClientServer.MultilineTextToArray(Form.MarkdownEditorAttribute_Text);
+
+	// Определение символа поиска и вставки/удаления
+	KeyChars = "- ";
+	KeyCharsLen = StrLen(KeyChars);
+
+	// Определение номеров начальной и конечной строк
+	BeginLine = (CursorPos.BeginningOfRow - 1);
+	EndLine = (CursorPos.EndOfRow - 1);
+
+	// Определение режима - вставка или удаление
+	InsertMode = (FindCharsInLines(LinesArray, KeyChars, BeginLine, EndLine) = -1);
+	
+	If InsertMode Then
+		InsertCharsAtBeginOfLines(LinesArray, KeyChars, BeginLine, EndLine);
+	Else
+		DelCharsFromBeginOfLines(LinesArray, KeyChars, BeginLine, EndLine);
+	EndIf;
+	
+	Form.MarkdownEditorAttribute_Text = MarkdownEditorClientServer.ArrayToMultilineText(LinesArray);
 	
 	// Сдвиг позиций выделения текста за счет того, что добавлены или удалены символы
 	If InsertMode Then
-		CursorPos.BeginningOfColumn = CursorPos.BeginningOfColumn + 2;
-		CursorPos.EndOfColumn = CursorPos.EndOfColumn + 2;
+		CursorPos.BeginningOfColumn = CursorPos.BeginningOfColumn + KeyCharsLen;
+		CursorPos.EndOfColumn = CursorPos.EndOfColumn + KeyCharsLen;
 	Else
-		If CursorPos.BeginningOfColumn >= 3 Then
-			CursorPos.BeginningOfColumn = CursorPos.BeginningOfColumn - 2;
+		If CursorPos.BeginningOfColumn >= KeyCharsLen + 1 Then
+			CursorPos.BeginningOfColumn = CursorPos.BeginningOfColumn - KeyCharsLen;
 		EndIf;
 		
-		If CursorPos.EndOfColumn >= 3 Then
-			CursorPos.EndOfColumn = CursorPos.EndOfColumn - 2;
+		If CursorPos.EndOfColumn >= KeyCharsLen + 1 Then
+			CursorPos.EndOfColumn = CursorPos.EndOfColumn - KeyCharsLen;
 		EndIf;
 	EndIf;
 	
