@@ -70,6 +70,111 @@ EndProcedure
 #Region InternalProceduresAndFunctions
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Процедуры инициации обработки текста
+
+Procedure InsertCodeBlock(Form)
+	
+	NotifyDescription = New NotifyDescription("OnCodeBlockFormClose", MarkdownEditorClient, Form);
+	OpenForm("CommonForm.CodeBlock", , Form, , , , NotifyDescription, FormWindowOpeningMode.LockOwnerWindow);	
+	
+EndProcedure
+
+Procedure InsertImage(Form)
+	
+	NotifyDescription = New NotifyDescription("OnImageFormClose", MarkdownEditorClient, Form);
+	OpenForm("CommonForm.InsertImage", , Form, , , , NotifyDescription, FormWindowOpeningMode.LockOwnerWindow);
+	
+EndProcedure
+
+Procedure InsertLink(Form)
+	
+	NotifyDescription = New NotifyDescription("OnLinkFormClose", MarkdownEditorClient, Form);
+	OpenForm("CommonForm.InsertLink", , Form, , , , NotifyDescription, FormWindowOpeningMode.LockOwnerWindow);
+	
+EndProcedure
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Процедуры-обработчики оповещений
+
+// Процедура-обработчик оповещения, вызываемаемый после закрытия окна добавления блока кода.
+//
+// Параметры:
+//  CloseResuls - Произвольный - результат закрытия окна.
+//  OwnerForm   - Form - форма, с которой связано событие.
+//
+Procedure OnCodeBlockFormClose(CloseResult, OwnerForm) Export
+	
+	If CloseResult = Undefined Then
+		Return;
+	EndIf;
+	
+	EditorItem = OwnerForm.Items.MarkdownEditorItem_EditorField;
+	
+	// Получение текущего положения курсора в редакторе
+	CursorPos = GetCursorPos(EditorItem);
+	
+	EditorItem.SelectedText = StrTemplate("```%1%2%3```", Chars.CR, CloseResult, Chars.CR);
+	
+	// Восстановление положения курсора
+	Notify("MarkdownEditorEvent_RestoreCursorPosition", CursorPos, OwnerForm.UUID);	
+	
+EndProcedure
+
+// Процедура-обработчик оповещения, вызываемаемый после закрытия окна добавления ссылки на изображение.
+//
+// Параметры:
+//  CloseResuls - Произвольный - результат закрытия окна.
+//  OwnerForm   - Form - форма, с которой связано событие.
+//
+Procedure OnImageFormClose(CloseResult, OwnerForm) Export
+	
+	If CloseResult = Undefined Then
+		Return;
+	EndIf;
+	
+	EditorItem = OwnerForm.Items.MarkdownEditorItem_EditorField;
+	
+	// Получение текущего положения курсора в редакторе
+	CursorPos = GetCursorPos(EditorItem);
+	
+	EditorItem.SelectedText = StrTemplate("![%1](%2)", CloseResult.AltText, CloseResult.URL);
+	
+	// Восстановление положения курсора
+	Notify("MarkdownEditorEvent_RestoreCursorPosition", CursorPos, OwnerForm.UUID);	
+	
+EndProcedure
+
+// Процедура-обработчик оповещения, вызываемаемый после закрытия окна добавления ссылки.
+//
+// Параметры:
+//  CloseResuls - Произвольный - результат закрытия окна.
+//  OwnerForm   - Form - форма, с которой связано событие.
+//
+Procedure OnLinkFormClose(CloseResult, OwnerForm) Export
+	
+	If CloseResult = Undefined OR IsBlankString(CloseResult.Address) Then
+		Return;
+	EndIf;
+	
+	EditorItem = OwnerForm.Items.MarkdownEditorItem_EditorField;
+	
+	// Получение текущего положения курсора в редакторе
+	CursorPos = GetCursorPos(EditorItem);
+	
+	If IsBlankString(CloseResult.LinkText) Then
+		LinkText = CloseResult.Address;
+	Else
+		LinkText = CloseResult.LinkText;
+	EndIf;
+	
+	EditorItem.SelectedText = StrTemplate("[%1](%2%3)", LinkText, CloseResult.Address);
+	
+	// Восстановление положения курсора
+	Notify("MarkdownEditorEvent_RestoreCursorPosition", CursorPos, OwnerForm.UUID);	
+	
+EndProcedure
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Процедуры и функции определения и изменения свойств редактора
 
 // Return description position of editor's cursor.
@@ -95,6 +200,43 @@ Function GetCursorPos(EditorItem)
 	Return CursorPos;
 	
 EndFunction
+
+Procedure SwitchMode(Form, CommandName)
+
+	// Переключение режима редактора в соответствии с командой
+	If CommandName = "MarkdownEditorCommand_EditorMode" Then
+		Form.MarkdownEditorAttribute_EditMode = 0;
+	ElsIf CommandName = "MarkdownEditorCommand_ViewMode" Then
+		Form.MarkdownEditorAttribute_EditMode = 1;
+	Else
+		Form.MarkdownEditorAttribute_EditMode = 2;
+	EndIf;
+	
+	If Form.MarkdownEditorAttribute_EditMode = 0 Then
+		Form.MarkdownEditorAttribute_HTML = "";
+	Else
+		Form.MarkdownEditorAttribute_HTML = MarkdownEditorClientServer.MarkdownToHTML(
+			Form.MarkdownEditorAttribute_Text);
+	EndIf;	
+		
+	Items = Form.Items;
+	Items.MarkdownEditorItem_EditorModeButton.Check = (Form.MarkdownEditorAttribute_EditMode = 0);
+	Items.MarkdownEditorItem_ViewModeButton.Check = (Form.MarkdownEditorAttribute_EditMode = 1);
+	Items.MarkdownEditorItem_PreviewModeButton.Check = (Form.MarkdownEditorAttribute_EditMode = 2);
+	
+	// Расчет доступности редактора и панелей редактирования
+	EditorEnabled = (Form.MarkdownEditorAttribute_EditMode = 0 OR Form.MarkdownEditorAttribute_EditMode = 2);
+	
+	// Управление видимостью редактора и просмотрщика
+	Items.MarkdownEditorItem_EditorField.Visible = EditorEnabled;
+	Items.MarkdownEditorItem_HTMLViewerField.Visible = (Form.MarkdownEditorAttribute_EditMode = 1 OR Form.MarkdownEditorAttribute_EditMode = 2);	
+	
+	// Управление доступностью команд панели редактирования
+	Items.MarkdownEditorItem_FontStyleButtonsGroup.Enabled = EditorEnabled;
+	Items.MarkdownEditorItem_ListsButtonsGroup.Enabled = EditorEnabled;
+	Items.MarkdownEditorItem_InsertButtonsGroup.Enabled = EditorEnabled;
+	
+EndProcedure
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Процедуры и функции обработки текста
@@ -234,87 +376,6 @@ Procedure InsertBulletList(Form)
 
 EndProcedure
 
-Procedure InsertCodeBlock(Form)
-	
-	NotifyDescription = New NotifyDescription("OnCodeBlockFormClose", MarkdownEditorClient, Form);
-	OpenForm("CommonForm.CodeBlock", , Form, , , , NotifyDescription, FormWindowOpeningMode.LockOwnerWindow);	
-	
-EndProcedure
-
-Procedure InsertImage(Form)
-	
-	NotifyDescription = New NotifyDescription("OnImageFormClose", MarkdownEditorClient, Form);
-	OpenForm("CommonForm.InsertImage", , Form, , , , NotifyDescription, FormWindowOpeningMode.LockOwnerWindow);
-	
-EndProcedure
-
-Procedure InsertLink(Form)
-	
-	NotifyDescription = New NotifyDescription("OnLinkFormClose", MarkdownEditorClient, Form);
-	OpenForm("CommonForm.InsertLink", , Form, , , , NotifyDescription, FormWindowOpeningMode.LockOwnerWindow);
-	
-EndProcedure
-
-Procedure OnCodeBlockFormClose(CloseResult, OwnerForm) Export
-	
-	If CloseResult = Undefined Then
-		Return;
-	EndIf;
-	
-	EditorItem = OwnerForm.Items.MarkdownEditorItem_EditorField;
-	
-	// Получение текущего положения курсора в редакторе
-	CursorPos = GetCursorPos(EditorItem);
-	
-	EditorItem.SelectedText = StrTemplate("```%1%2%3```", Chars.CR, CloseResult, Chars.CR);
-	
-	// Восстановление положения курсора
-	Notify("MarkdownEditorEvent_RestoreCursorPosition", CursorPos, OwnerForm.UUID);	
-	
-EndProcedure
-
-Procedure OnImageFormClose(CloseResult, OwnerForm) Export
-	
-	If CloseResult = Undefined Then
-		Return;
-	EndIf;
-	
-	EditorItem = OwnerForm.Items.MarkdownEditorItem_EditorField;
-	
-	// Получение текущего положения курсора в редакторе
-	CursorPos = GetCursorPos(EditorItem);
-	
-	EditorItem.SelectedText = StrTemplate("![%1](%2)", CloseResult.AltText, CloseResult.URL);
-	
-	// Восстановление положения курсора
-	Notify("MarkdownEditorEvent_RestoreCursorPosition", CursorPos, OwnerForm.UUID);	
-	
-EndProcedure
-
-Procedure OnLinkFormClose(CloseResult, OwnerForm) Export
-	
-	If CloseResult = Undefined OR IsBlankString(CloseResult.Address) Then
-		Return;
-	EndIf;
-	
-	EditorItem = OwnerForm.Items.MarkdownEditorItem_EditorField;
-	
-	// Получение текущего положения курсора в редакторе
-	CursorPos = GetCursorPos(EditorItem);
-	
-	If IsBlankString(CloseResult.LinkText) Then
-		LinkText = CloseResult.Address;
-	Else
-		LinkText = CloseResult.LinkText;
-	EndIf;
-	
-	EditorItem.SelectedText = StrTemplate("[%1](%2%3)", LinkText, CloseResult.Address);
-	
-	// Восстановление положения курсора
-	Notify("MarkdownEditorEvent_RestoreCursorPosition", CursorPos, OwnerForm.UUID);	
-	
-EndProcedure
-
 Procedure SetFontStyle(Form, Marker, BlankString)
 	
 	EditorItem = Form.Items.MarkdownEditorItem_EditorField;
@@ -339,43 +400,6 @@ Procedure SetFontStyle(Form, Marker, BlankString)
 	
 	// Восстановление положения курсора
 	Notify("MarkdownEditorEvent_RestoreCursorPosition", CursorPos, Form.UUID);	
-	
-EndProcedure
-
-Procedure SwitchMode(Form, CommandName)
-
-	// Переключение режима редактора в соответствии с командой
-	If CommandName = "MarkdownEditorCommand_EditorMode" Then
-		Form.MarkdownEditorAttribute_EditMode = 0;
-	ElsIf CommandName = "MarkdownEditorCommand_ViewMode" Then
-		Form.MarkdownEditorAttribute_EditMode = 1;
-	Else
-		Form.MarkdownEditorAttribute_EditMode = 2;
-	EndIf;
-	
-	If Form.MarkdownEditorAttribute_EditMode = 0 Then
-		Form.MarkdownEditorAttribute_HTML = "";
-	Else
-		Form.MarkdownEditorAttribute_HTML = MarkdownEditorClientServer.MarkdownToHTML(
-			Form.MarkdownEditorAttribute_Text);
-	EndIf;	
-		
-	Items = Form.Items;
-	Items.MarkdownEditorItem_EditorModeButton.Check = (Form.MarkdownEditorAttribute_EditMode = 0);
-	Items.MarkdownEditorItem_ViewModeButton.Check = (Form.MarkdownEditorAttribute_EditMode = 1);
-	Items.MarkdownEditorItem_PreviewModeButton.Check = (Form.MarkdownEditorAttribute_EditMode = 2);
-	
-	// Расчет доступности редактора и панелей редактирования
-	EditorEnabled = (Form.MarkdownEditorAttribute_EditMode = 0 OR Form.MarkdownEditorAttribute_EditMode = 2);
-	
-	// Управление видимостью редактора и просмотрщика
-	Items.MarkdownEditorItem_EditorField.Visible = EditorEnabled;
-	Items.MarkdownEditorItem_HTMLViewerField.Visible = (Form.MarkdownEditorAttribute_EditMode = 1 OR Form.MarkdownEditorAttribute_EditMode = 2);	
-	
-	// Управление доступностью команд панели редактирования
-	Items.MarkdownEditorItem_FontStyleButtonsGroup.Enabled = EditorEnabled;
-	Items.MarkdownEditorItem_ListsButtonsGroup.Enabled = EditorEnabled;
-	Items.MarkdownEditorItem_InsertButtonsGroup.Enabled = EditorEnabled;
 	
 EndProcedure
 
