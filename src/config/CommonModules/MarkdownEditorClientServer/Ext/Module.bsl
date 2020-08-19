@@ -39,7 +39,7 @@ EndFunction
 
 Function ArrayToMultilineText(Val Array) Export
 
-	Return StrConcat(LinesArray, Chars.LF);
+	Return StrConcat(Array, Chars.LF);
 
 EndFunction
 

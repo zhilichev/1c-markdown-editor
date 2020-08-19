@@ -37,6 +37,10 @@ Procedure ExecCommand(Form, Command) Export
 	ElsIf CommandName = "MarkdownEditorCommand_InsertBulletList" Then
 		InsertBulletList(Form);
 
+	// Обработка команды оформления нумерованного списка
+	ElsIf CommandName = "MarkdownEditorCommand_InsertNumberedList" Then
+		InsertNumberedList(Form);
+
 	// Обработка команды добавления ссылки
 	ElsIf CommandName = "MarkdownEditorCommand_InsertLink" Then
 	    InsertLink(Form);
@@ -72,6 +76,53 @@ EndProcedure
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Процедуры инициации обработки текста
 
+Procedure InsertBulletList(Form)
+
+	// Получение текущего положения курсора в редакторе
+	CursorPos = GetCursorPos(Form.Items.MarkdownEditorItem_EditorField);
+
+	// Разделение многострочной строки на массив строк
+	LinesArray = MarkdownEditorClientServer.MultilineTextToArray(Form.MarkdownEditorAttribute_Text);
+
+	// Определение символа поиска и вставки/удаления
+	KeyChars = "- ";
+	KeyCharsLen = StrLen(KeyChars);
+
+	// Определение номеров начальной и конечной строк
+	BeginLine = (CursorPos.BeginningOfRow - 1);
+	EndLine = (CursorPos.EndOfRow - 1);
+
+	// Определение режима - вставка или удаление
+	InsertMode = (FindCharsInLines(LinesArray, KeyChars, BeginLine, EndLine) = -1);
+	
+	If InsertMode Then
+		InsertCharsAtBeginOfLines(LinesArray, KeyChars, BeginLine, EndLine);
+	Else
+		DelCharsFromBeginOfLines(LinesArray, KeyChars, BeginLine, EndLine);
+	EndIf;
+	
+	Form.MarkdownEditorAttribute_Text = MarkdownEditorClientServer.ArrayToMultilineText(LinesArray);
+	
+	// Сдвиг позиций выделения текста за счет того, что добавлены или удалены символы
+	If InsertMode Then
+		CursorPos.BeginningOfColumn = CursorPos.BeginningOfColumn + KeyCharsLen;
+		CursorPos.EndOfColumn = CursorPos.EndOfColumn + KeyCharsLen;
+	Else
+		If CursorPos.BeginningOfColumn >= KeyCharsLen + 1 Then
+			CursorPos.BeginningOfColumn = CursorPos.BeginningOfColumn - KeyCharsLen;
+		EndIf;
+		
+		If CursorPos.EndOfColumn >= KeyCharsLen + 1 Then
+			CursorPos.EndOfColumn = CursorPos.EndOfColumn - KeyCharsLen;
+		EndIf;
+	EndIf;
+	
+	CursorPos.FullSelection = True;
+	
+	Notify("MarkdownEditorEvent_RestoreCursorPosition", CursorPos, Form.UUID);
+
+EndProcedure
+
 Procedure InsertCodeBlock(Form)
 	
 	NotifyDescription = New NotifyDescription("OnCodeBlockFormClose", MarkdownEditorClient, Form);
@@ -91,6 +142,23 @@ Procedure InsertLink(Form)
 	NotifyDescription = New NotifyDescription("OnLinkFormClose", MarkdownEditorClient, Form);
 	OpenForm("CommonForm.InsertLink", , Form, , , , NotifyDescription, FormWindowOpeningMode.LockOwnerWindow);
 	
+EndProcedure
+
+Procedure InsertNumberedList(Form)
+
+	// Получение текущего положения курсора в редакторе
+	CursorPos = GetCursorPos(Form.Items.MarkdownEditorItem_EditorField);
+
+	// Разделение многострочной строки на массив строк
+	LinesArray = MarkdownEditorClientServer.MultilineTextToArray(Form.MarkdownEditorAttribute_Text);
+
+	// Определение номеров начальной и конечной строк
+	BeginLine = (CursorPos.BeginningOfRow - 1);
+	EndLine = (CursorPos.EndOfRow - 1);
+
+	For N = BeginLine To EndLine Do
+		CheckPattern(LinesArray[N], "^(\s)*")
+
 EndProcedure
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -241,6 +309,38 @@ EndProcedure
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Процедуры и функции обработки текста
 
+Function CheckPattern(Val String, Val Pattern)
+
+	TextPattern =
+		"<Model xmlns=""http://v8.1c.ru/8.1/xdto"" xmlns:xs=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xsi:type=""Model"">
+		|<package targetNamespace=""sample-my-package"">
+		|<valueType name=""testtypes"" base=""xs:string"">
+		|<pattern>" + Pattern + "</pattern>
+		|</valueType>
+		|<objectType name=""TestObj"">
+		|<property xmlns:d4p1=""sample-my-package"" name=""TestItem"" type=""d4p1:testtypes""/>
+		|</objectType>
+		|</package>
+		|</Model>";
+
+
+	XMLReader = New XMLReader;
+	XMLReader.SetString(TextPattern);
+
+    Model = XDTOFactory.ReadXML(XMLReader);
+    MyXDTOFactory = New XDTOFactory(Model);
+    Package = MyXDTOFactory.Packages.Get("sample-my-package");
+    Test = MyXDTOFactory.Create(Package.Get("TestObj"));
+
+    Try
+        Test.TestItem = String;
+        Return True;
+	Except
+        Return False;
+	EndTry;	
+
+EndFunction
+
 // Удаляет из начала каждой строки многострочного текста символы, указанные в параметре Chars.
 //
 // Параметры:
@@ -326,53 +426,6 @@ Procedure InsertCharsAtBeginOfLines(TextLines, Val Chars, Val BeginLine = 0, Val
 			TextLines.Set(N, Chars + SearchToStrIn);
 		EndIf;
 	EndDo;	
-
-EndProcedure
-
-Procedure InsertBulletList(Form)
-
-	// Получение текущего положения курсора в редакторе
-	CursorPos = GetCursorPos(Form.Items.MarkdownEditorItem_EditorField);
-
-	// Разделение многострочной строки на массив строк
-	LinesArray = MarkdownEditorClientServer.MultilineTextToArray(Form.MarkdownEditorAttribute_Text);
-
-	// Определение символа поиска и вставки/удаления
-	KeyChars = "- ";
-	KeyCharsLen = StrLen(KeyChars);
-
-	// Определение номеров начальной и конечной строк
-	BeginLine = (CursorPos.BeginningOfRow - 1);
-	EndLine = (CursorPos.EndOfRow - 1);
-
-	// Определение режима - вставка или удаление
-	InsertMode = (FindCharsInLines(LinesArray, KeyChars, BeginLine, EndLine) = -1);
-	
-	If InsertMode Then
-		InsertCharsAtBeginOfLines(LinesArray, KeyChars, BeginLine, EndLine);
-	Else
-		DelCharsFromBeginOfLines(LinesArray, KeyChars, BeginLine, EndLine);
-	EndIf;
-	
-	Form.MarkdownEditorAttribute_Text = MarkdownEditorClientServer.ArrayToMultilineText(LinesArray);
-	
-	// Сдвиг позиций выделения текста за счет того, что добавлены или удалены символы
-	If InsertMode Then
-		CursorPos.BeginningOfColumn = CursorPos.BeginningOfColumn + KeyCharsLen;
-		CursorPos.EndOfColumn = CursorPos.EndOfColumn + KeyCharsLen;
-	Else
-		If CursorPos.BeginningOfColumn >= KeyCharsLen + 1 Then
-			CursorPos.BeginningOfColumn = CursorPos.BeginningOfColumn - KeyCharsLen;
-		EndIf;
-		
-		If CursorPos.EndOfColumn >= KeyCharsLen + 1 Then
-			CursorPos.EndOfColumn = CursorPos.EndOfColumn - KeyCharsLen;
-		EndIf;
-	EndIf;
-	
-	CursorPos.FullSelection = True;
-	
-	Notify("MarkdownEditorEvent_RestoreCursorPosition", CursorPos, Form.UUID);
 
 EndProcedure
 
