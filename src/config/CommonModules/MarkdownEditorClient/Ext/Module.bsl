@@ -157,7 +157,8 @@ Procedure InsertNumberedList(Form)
 	EndLine = (CursorPos.EndOfRow - 1);
 
 	For N = BeginLine To EndLine Do
-		CheckPattern(LinesArray[N], "^(\s)*")
+		CheckPattern(LinesArray[N], "^(\s)*");
+	EndDo;
 
 EndProcedure
 
