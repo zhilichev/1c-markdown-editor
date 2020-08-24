@@ -1,6 +1,8 @@
 ﻿&AtClient
 Var CursorPos;
 
+#Region FormEventHandlers
+
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
@@ -14,12 +16,14 @@ Procedure NotificationProcessing(EventName, Parameter, Source)
 	
 	// Проверка на событие RestoreCursorPosition - восстановление положения курсора в поле
 	// редактирования текста и инициация обработчика ожидания.
-	If EventName = "MarkdownEditorEvent_RestoreCursorPosition" AND Source = UUID Then
+	If Source = UUID AND EventName = "MarkdownEditorEvent_RestoreCursorPosition" Then
 		CursorPos = Parameter;
 		AttachIdleHandler("Attachable_MarkdownEditorRestoreCursorPosition", 0.01, True);
 	EndIf;
 	
 EndProcedure
+
+#EndRegion
 
 #Region AttachableHandlersOfMarkdownEditor
 
