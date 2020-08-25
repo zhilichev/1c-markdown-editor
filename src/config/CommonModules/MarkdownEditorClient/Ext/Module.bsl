@@ -156,9 +156,9 @@ Procedure InsertNumberedList(Form)
 	BeginLine = (CursorPos.BeginningOfRow - 1);
 	EndLine = (CursorPos.EndOfRow - 1);
 
-	For N = BeginLine To EndLine Do
-		CheckPattern(LinesArray[N], "^(\s)*");
-	EndDo;
+	//For N = BeginLine To EndLine Do
+	//	CheckPattern(LinesArray[N], "^(\s)*");
+	//EndDo;
 
 EndProcedure
 
@@ -312,33 +312,33 @@ EndProcedure
 
 Function CheckPattern(Val String, Val Pattern)
 
-	TextPattern =
-		"<Model xmlns=""http://v8.1c.ru/8.1/xdto"" xmlns:xs=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xsi:type=""Model"">
-		|<package targetNamespace=""sample-my-package"">
-		|<valueType name=""testtypes"" base=""xs:string"">
-		|<pattern>" + Pattern + "</pattern>
-		|</valueType>
-		|<objectType name=""TestObj"">
-		|<property xmlns:d4p1=""sample-my-package"" name=""TestItem"" type=""d4p1:testtypes""/>
-		|</objectType>
-		|</package>
-		|</Model>";
+	//TextPattern =
+	//	"<Model xmlns=""http://v8.1c.ru/8.1/xdto"" xmlns:xs=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xsi:type=""Model"">
+	//	|<package targetNamespace=""sample-my-package"">
+	//	|<valueType name=""testtypes"" base=""xs:string"">
+	//	|<pattern>" + Pattern + "</pattern>
+	//	|</valueType>
+	//	|<objectType name=""TestObj"">
+	//	|<property xmlns:d4p1=""sample-my-package"" name=""TestItem"" type=""d4p1:testtypes""/>
+	//	|</objectType>
+	//	|</package>
+	//	|</Model>";
 
 
-	XMLReader = New XMLReader;
-	XMLReader.SetString(TextPattern);
+	//XMLReader = New XMLReader;
+	//XMLReader.SetString(TextPattern);
 
-    Model = XDTOFactory.ReadXML(XMLReader);
-    MyXDTOFactory = New XDTOFactory(Model);
-    Package = MyXDTOFactory.Packages.Get("sample-my-package");
-    Test = MyXDTOFactory.Create(Package.Get("TestObj"));
+	//Model = XDTOFactory.ReadXML(XMLReader);
+	//MyXDTOFactory = New XDTOFactory(Model);
+	//Package = MyXDTOFactory.Packages.Get("sample-my-package");
+	//Test = MyXDTOFactory.Create(Package.Get("TestObj"));
 
-    Try
-        Test.TestItem = String;
-        Return True;
-	Except
-        Return False;
-	EndTry;	
+	//Try
+	//    Test.TestItem = String;
+	//    Return True;
+	//Except
+	//    Return False;
+	//EndTry;	
 
 EndFunction
 
