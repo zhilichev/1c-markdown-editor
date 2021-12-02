@@ -182,7 +182,10 @@ Procedure OnCodeBlockFormClose(CloseResult, OwnerForm) Export
 	// Получение текущего положения курсора в редакторе
 	CursorPos = GetCursorPos(EditorItem);
 	
-	EditorItem.SelectedText = StrTemplate("```%1%2%3```", Chars.CR, CloseResult, Chars.CR);
+	EditorItem.SelectedText = StrTemplate(
+	"```
+	|%1
+	|```", CloseResult);
 	
 	// Восстановление положения курсора
 	Notify("MarkdownEditorEvent_RestoreCursorPosition", CursorPos, OwnerForm.UUID);	

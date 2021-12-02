@@ -31,12 +31,12 @@ Function MarkdownToHTML(Val Text) Export
 	
 	Text = StrReplace(Text, Chars.LF, "\r\n");
 	Text = StrReplace(Text, "'", "\'");
-	// Text = StrReplace(Text, """", "\""");
-	// Text = StrReplace(Text, "\", "\\");
-	// Text = СтрЗаменить(Text, "<", "\<");
-	// Text = СтрЗаменить(Text, ">", "\>");
-	// Text = СтрЗаменить(Text, "`", "\`");
-	// Text = СтрЗаменить(Text, "_", "\_");
+	//Text = StrReplace(Text, """", "\""");
+	//Text = StrReplace(Text, "\", "\\");
+	//Text = СтрЗаменить(Text, "<", "\<");
+	//Text = СтрЗаменить(Text, ">", "\>");
+	//Text = СтрЗаменить(Text, "`", "\`");
+	//Text = СтрЗаменить(Text, "_", "\_");
 	
 	Return StrTemplate(Template, Text);
 	
