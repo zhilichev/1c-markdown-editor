@@ -1,5 +1,11 @@
-﻿&AtClient
+﻿
+#Region Variables
+
+// Для хранения позиции курсора до выполнения операции с текстом
+&AtClient
 Var CursorPos;
+
+#EndRegion
 
 #Region FormEventHandlers
 

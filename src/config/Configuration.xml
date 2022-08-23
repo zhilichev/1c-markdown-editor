@@ -140,22 +140,20 @@
 		<ChildObjects>
 			<Language>English</Language>
 			<Language>Russian</Language>
-			<CommonPicture>Bold</CommonPicture>
-			<CommonPicture>BulletList</CommonPicture>
-			<CommonPicture>CodeBlock</CommonPicture>
-			<CommonPicture>EditorMode</CommonPicture>
-			<CommonPicture>Image</CommonPicture>
-			<CommonPicture>Italic</CommonPicture>
-			<CommonPicture>Link</CommonPicture>
-			<CommonPicture>NumberedList</CommonPicture>
-			<CommonPicture>Strikethrough</CommonPicture>
-			<CommonPicture>ViewMode</CommonPicture>
-			<CommonPicture>PreviewMode</CommonPicture>
+			<CommonPicture>MarkdownBold</CommonPicture>
+			<CommonPicture>MarkdownBulletList</CommonPicture>
+			<CommonPicture>MarkdownCodeBlock</CommonPicture>
+			<CommonPicture>MarkdownEditorMode</CommonPicture>
+			<CommonPicture>MarkdownImage</CommonPicture>
+			<CommonPicture>MarkdownItalic</CommonPicture>
+			<CommonPicture>MarkdownLink</CommonPicture>
+			<CommonPicture>MarkdownNumberedList</CommonPicture>
+			<CommonPicture>MarkdownPreviewMode</CommonPicture>
+			<CommonPicture>MarkdownStrikethrough</CommonPicture>
+			<CommonPicture>MarkdownViewMode</CommonPicture>
 			<CommonModule>CommonUseClientServer</CommonModule>
 			<CommonModule>MarkdownEditor</CommonModule>
 			<CommonModule>MarkdownEditorClient</CommonModule>
-			<CommonModule>MarkdownEditorServerCached</CommonModule>
-			<CommonModule>MarkdownEditorServerCall</CommonModule>
 			<CommonModule>MarkdownEditorClientServer</CommonModule>
 			<CommonForm>CodeBlock</CommonForm>
 			<CommonForm>InsertImage</CommonForm>

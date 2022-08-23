@@ -1,5 +1,11 @@
 ﻿#Region Interface
 
+Function ArrayToMultilineText(Val Array) Export
+
+	Return StrConcat(Array, Chars.LF);
+
+EndFunction
+
 // Создает объект ОписаниеТипов, содержащий тип Дата.
 //
 // Параметры:
@@ -55,6 +61,14 @@ Function GetNumberTypeDescription(Val Digits, Val FractionDigits = 0, Val Allowe
 	EndIf;
 	
 	Return New TypeDescription("Number", NumberQualifier);
+	
+EndFunction
+
+Function MultilineTextToArray(Val Text) Export
+	
+	TextLines = StrSplit(Text, Chars.LF, True);
+	
+	Return TextLines;
 	
 EndFunction
 

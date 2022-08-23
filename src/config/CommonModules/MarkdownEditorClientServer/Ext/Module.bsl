@@ -21,9 +21,9 @@ Function MarkdownToHTML(Val Text) Export
 	|	var text='%1',
 	|		target=document.getElementById('targetDiv'),
 	|		converter=new showdown.Converter({strikethrough: 'true', tables: 'true', tasklists: 'true'}),
-	|		html=converter.makeHtml(text);
+	|		blockHtml=converter.makeHtml(text);
 	|
-	|	target.innerHTML=html;
+	|	target.innerHTML=blockHtml;
 	|</script>
 	|</article>
 	|</body>
@@ -31,7 +31,7 @@ Function MarkdownToHTML(Val Text) Export
 	
 	Text = StrReplace(Text, Chars.LF, "\r\n");
 	Text = StrReplace(Text, "'", "\'");
-	//Text = StrReplace(Text, """", "\""");
+	Text = StrReplace(Text, """", "\""");
 	//Text = StrReplace(Text, "\", "\\");
 	//Text = СтрЗаменить(Text, "<", "\<");
 	//Text = СтрЗаменить(Text, ">", "\>");
@@ -39,20 +39,6 @@ Function MarkdownToHTML(Val Text) Export
 	//Text = СтрЗаменить(Text, "_", "\_");
 	
 	Return StrTemplate(Template, Text);
-	
-EndFunction
-
-Function ArrayToMultilineText(Val Array) Export
-
-	Return StrConcat(Array, Chars.LF);
-
-EndFunction
-
-Function MultilineTextToArray(Val Text) Export
-	
-	TextLines = StrSplit(Text, Chars.LF, True);
-	
-	Return TextLines;
 	
 EndFunction
 

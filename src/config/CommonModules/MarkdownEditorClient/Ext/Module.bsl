@@ -82,7 +82,7 @@ Procedure InsertBulletList(Form)
 	CursorPos = GetCursorPos(Form.Items.MarkdownEditorItem_EditorField);
 
 	// Разделение многострочной строки на массив строк
-	LinesArray = MarkdownEditorClientServer.MultilineTextToArray(Form.MarkdownEditorAttribute_Text);
+	LinesArray = CommonUseClientServer.MultilineTextToArray(Form.MarkdownEditorAttribute_Text);
 
 	// Определение символа поиска и вставки/удаления
 	KeyChars = "- ";
@@ -101,7 +101,7 @@ Procedure InsertBulletList(Form)
 		DelCharsFromBeginOfLines(LinesArray, KeyChars, BeginLine, EndLine);
 	EndIf;
 	
-	Form.MarkdownEditorAttribute_Text = MarkdownEditorClientServer.ArrayToMultilineText(LinesArray);
+	Form.MarkdownEditorAttribute_Text = CommonUseClientServer.ArrayToMultilineText(LinesArray);
 	
 	// Сдвиг позиций выделения текста за счет того, что добавлены или удалены символы
 	If InsertMode Then
@@ -150,7 +150,7 @@ Procedure InsertNumberedList(Form)
 	CursorPos = GetCursorPos(Form.Items.MarkdownEditorItem_EditorField);
 
 	// Разделение многострочной строки на массив строк
-	LinesArray = MarkdownEditorClientServer.MultilineTextToArray(Form.MarkdownEditorAttribute_Text);
+	LinesArray = CommonUseClientServer.MultilineTextToArray(Form.MarkdownEditorAttribute_Text);
 
 	// Определение номеров начальной и конечной строк
 	BeginLine = (CursorPos.BeginningOfRow - 1);

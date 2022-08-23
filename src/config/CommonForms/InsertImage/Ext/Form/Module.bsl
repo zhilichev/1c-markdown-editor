@@ -1,4 +1,6 @@
 ﻿
+#Region FormCommandsEventHandlers
+
 &AtClient
 Procedure InsertLink(Command)
 	
@@ -9,3 +11,5 @@ Procedure InsertLink(Command)
 	Close(Result);
 	
 EndProcedure
+
+#EndRegion

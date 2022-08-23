@@ -94,7 +94,7 @@ Procedure CreateFormCommands(Form, NewCommands)
 	// Команда переключения в режим "Редактор"
 	Command = Form.Commands.Add("MarkdownEditorCommand_EditorMode");
 	Command.Action         = "Attachable_MarkdownEditorExecCommand";
-	Command.Picture        = PictureLib.EditorMode;
+	Command.Picture        = PictureLib.MarkdownEditorMode;
 	Command.ToolTip        = NStr("en = 'Switch to editor mode'");
 	Command.Representation = ButtonRepresentation.Picture;
 	Command.Shortcut       = New Shortcut(Key.E, True, False, True);
@@ -104,7 +104,7 @@ Procedure CreateFormCommands(Form, NewCommands)
 	// Команда переключения в режим "Просмотр"
 	Command = Form.Commands.Add("MarkdownEditorCommand_ViewMode");
 	Command.Action         = "Attachable_MarkdownEditorExecCommand";
-	Command.Picture        = PictureLib.ViewMode;
+	Command.Picture        = PictureLib.MarkdownViewMode;
 	Command.ToolTip        = NStr("en = 'Switch to view mode'");
 	Command.Representation = ButtonRepresentation.Picture;
 	Command.Shortcut       = New Shortcut(Key.V, True, False, True);
@@ -114,7 +114,7 @@ Procedure CreateFormCommands(Form, NewCommands)
 	// Команда переключения в режим "Редактор"
 	Command = Form.Commands.Add("MarkdownEditorCommand_PreviewMode");
 	Command.Action         = "Attachable_MarkdownEditorExecCommand";
-	Command.Picture        = PictureLib.PreviewMode;
+	Command.Picture        = PictureLib.MarkdownPreviewMode;
 	Command.ToolTip        = NStr("en = 'Switch to live preview mode'");
 	Command.Representation = ButtonRepresentation.Picture;
 	Command.Shortcut       = New Shortcut(Key.P, True, False, True);
@@ -124,7 +124,7 @@ Procedure CreateFormCommands(Form, NewCommands)
 	// Команда полужирного начертания шрифта
 	Command = Form.Commands.Add("MarkdownEditorCommand_SetBoldFont");
 	Command.Action         = "Attachable_MarkdownEditorExecCommand";
-	Command.Picture        = PictureLib.Bold;
+	Command.Picture        = PictureLib.MarkdownBold;
 	Command.Representation = ButtonRepresentation.Picture;
 	Command.ToolTip        = NStr("en = 'Bold'");
 	Command.Shortcut       = New Shortcut(Key.B, True, False, True);
@@ -134,7 +134,7 @@ Procedure CreateFormCommands(Form, NewCommands)
 	// Команда курсивного начертания шрифта
 	Command = Form.Commands.Add("MarkdownEditorCommand_SetItalicFont");
 	Command.Action         = "Attachable_MarkdownEditorExecCommand";
-	Command.Picture        = PictureLib.Italic;
+	Command.Picture        = PictureLib.MarkdownItalic;
 	Command.Representation = ButtonRepresentation.Picture;
 	Command.ToolTip        = NStr("en = 'Italic'");
 	Command.Shortcut       = New Shortcut(Key.I, True, False, True);
@@ -144,7 +144,7 @@ Procedure CreateFormCommands(Form, NewCommands)
 	// Команда зачеркнутого начертания шрифта
 	Command = Form.Commands.Add("MarkdownEditorCommand_SetStrikethroughFont");
 	Command.Action         = "Attachable_MarkdownEditorExecCommand";
-	Command.Picture        = PictureLib.Strikethrough;
+	Command.Picture        = PictureLib.MarkdownStrikethrough;
 	Command.Representation = ButtonRepresentation.Picture;
 	Command.ToolTip        = NStr("en = 'Strikethrough'");
 	Command.Shortcut       = New Shortcut(Key.S, True, False, True);
@@ -154,7 +154,7 @@ Procedure CreateFormCommands(Form, NewCommands)
 	// Команда добавления ненумерованного списка
 	Command = Form.Commands.Add("MarkdownEditorCommand_InsertBulletList");
 	Command.Action         = "Attachable_MarkdownEditorExecCommand";
-	Command.Picture        = PictureLib.BulletList;
+	Command.Picture        = PictureLib.MarkdownBulletList;
 	Command.Representation = ButtonRepresentation.Picture;
 	Command.ToolTip        = NStr("en = 'Bullet list'");
 	
@@ -163,7 +163,7 @@ Procedure CreateFormCommands(Form, NewCommands)
 	// Команда добавления нумерованного списка
 	Command = Form.Commands.Add("MarkdownEditorCommand_InsertNumberedList");
 	Command.Action         = "Attachable_MarkdownEditorExecCommand";
-	Command.Picture        = PictureLib.NumberedList;
+	Command.Picture        = PictureLib.MarkdownNumberedList;
 	Command.Representation = ButtonRepresentation.Picture;
 	Command.ToolTip        = NStr("en = 'Numbered list'");
 	
@@ -172,7 +172,7 @@ Procedure CreateFormCommands(Form, NewCommands)
 	// Команда добавления ссылки
 	Command = Form.Commands.Add("MarkdownEditorCommand_InsertLink");
 	Command.Action         = "Attachable_MarkdownEditorExecCommand";
-	Command.Picture        = PictureLib.Link;
+	Command.Picture        = PictureLib.MarkdownLink;
 	Command.Representation = ButtonRepresentation.Picture;
 	Command.ToolTip        = NStr("en = 'Insert link'");
 	
@@ -181,7 +181,7 @@ Procedure CreateFormCommands(Form, NewCommands)
 	// Команда добавления блока кода
 	Command = Form.Commands.Add("MarkdownEditorCommand_InsertCodeBlock");
 	Command.Action         = "Attachable_MarkdownEditorExecCommand";
-	Command.Picture        = PictureLib.CodeBlock;
+	Command.Picture        = PictureLib.MarkdownCodeBlock;
 	Command.Representation = ButtonRepresentation.Picture;
 	Command.ToolTip        = NStr("en = 'Insert code block'");
 	
@@ -190,7 +190,7 @@ Procedure CreateFormCommands(Form, NewCommands)
 	// Команда добавления изображения
 	Command = Form.Commands.Add("MarkdownEditorCommand_InsertImage");
 	Command.Action         = "Attachable_MarkdownEditorExecCommand";
-	Command.Picture        = PictureLib.Image;
+	Command.Picture        = PictureLib.MarkdownImage;
 	Command.Representation = ButtonRepresentation.Picture;
 	Command.ToolTip        = NStr("en = 'Insert image'");
 	
