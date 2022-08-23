@@ -48,9 +48,9 @@
 			</UsePurposes>
 			<ScriptVariant>English</ScriptVariant>
 			<DefaultRoles/>
-			<Vendor/>
-			<Version/>
-			<UpdateCatalogAddress/>
+			<Vendor>Aleksandr Zhilichev</Vendor>
+			<Version>1.0.0.0</Version>
+			<UpdateCatalogAddress>https://github.com/zhilichev/1c-markdown-editor/releases</UpdateCatalogAddress>
 			<IncludeHelpInContents>false</IncludeHelpInContents>
 			<UseManagedFormInOrdinaryApplication>false</UseManagedFormInOrdinaryApplication>
 			<UseOrdinaryFormInManagedApplication>false</UseOrdinaryFormInManagedApplication>
@@ -128,7 +128,12 @@
 			<DetailedInformation/>
 			<Copyright/>
 			<VendorInformationAddress/>
-			<ConfigurationInformationAddress/>
+			<ConfigurationInformationAddress>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>https://github.com/zhilichev/1c-markdown-editor/</v8:content>
+				</v8:item>
+			</ConfigurationInformationAddress>
 			<DataLockControlMode>Managed</DataLockControlMode>
 			<ObjectAutonumerationMode>NotAutoFree</ObjectAutonumerationMode>
 			<ModalityUseMode>DontUse</ModalityUseMode>
